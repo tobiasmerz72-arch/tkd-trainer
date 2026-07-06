@@ -1,416 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TKD Trainer</title>
 <style>
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  background:#101318;
-  color:white;
-  padding:16px;
-}
-.app{max-width:760px;margin:auto;padding-bottom:30px}
-h1{margin:8px 0 4px;font-size:28px}
-p{color:#aab4c4}
-.box{
-  background:#1b2029;
-  border:1px solid #333b4a;
-  border-radius:18px;
-  padding:16px;
-  margin-top:14px;
-}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:560px){.row{grid-template-columns:1fr}}
-label{display:block;color:#aab4c4;font-size:13px;margin:10px 0 4px}
-select,input{
-  width:100%;
-  box-sizing:border-box;
-  font-size:17px;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid #333b4a;
-  background:#222936;
-  color:white;
-}
-button{
-  width:100%;
-  margin-top:10px;
-  font-size:17px;
-  font-weight:700;
-  padding:14px;
-  border:0;
-  border-radius:14px;
-  background:#31394a;
-  color:white;
-}
-.primary{background:#ffcc33;color:#111}
-.good{background:#21452a;color:#8ee88e;border:1px solid #357a43}
-.bad{background:#4d2525;color:#ff9a9a;border:1px solid #864141}
-.question{
-  font-size:44px;
-  line-height:1.05;
-  font-weight:800;
-  margin:18px 0;
-  word-break:break-word;
-}
-.hangul{
-  font-size:30px;
-  color:#ffcc33;
-  margin-top:-8px;
-  margin-bottom:10px;
-}
-.meta span{
-  display:inline-block;
-  background:#293142;
-  border:1px solid #3a4559;
-  border-radius:999px;
-  padding:6px 9px;
-  font-size:12px;
-  margin:0 5px 6px 0;
-}
-.answer{
-  background:#12161e;
-  border:1px solid #333b4a;
-  border-radius:14px;
-  padding:14px;
-  margin-top:12px;
-  line-height:1.55;
-}
-.answerMain{font-size:30px;font-weight:800;margin-bottom:8px}
-.hidden{display:none}
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
-.stat{text-align:center;background:#161b24;border:1px solid #333b4a;border-radius:12px;padding:10px}
-.stat b{display:block;font-size:22px}
-.small{font-size:13px;color:#aab4c4;line-height:1.4}
+body{font-family:Arial;background:#101318;color:white;padding:20px}
+.card{background:#1b2029;padding:20px;border-radius:16px}
+button,select{font-size:18px;padding:12px;margin:8px 0;width:100%}
+.big{font-size:34px;font-weight:bold;margin:20px 0}
+.answer{font-size:24px;color:#ffcc33}
 </style>
 </head>
-
 <body>
-<div class="app">
-<h1>ITF Taekwon-Do Trainer</h1>
-<p>Korean ↔ English flashcards with Korean audio.</p>
+<h1>TKD Trainer</h1>
 
-<div class="box">
-  <div class="row">
-    <div>
-      <label>Mode</label>
-      <select id="mode" onchange="nextCard()">
-        <option value="ko2en">Korean → English</option>
-        <option value="en2ko">English → Korean</option>
-        <option value="mixed">Mixed</option>
-      </select>
-    </div>
+<div class="card">
+<label>Your belt</label>
+<select id="belt">
+<option>White</option>
+<option>Yellow Stripe</option>
+<option>Yellow</option>
+<option>Green Stripe</option>
+<option>Green</option>
+<option>Blue Stripe</option>
+<option>Blue</option>
+<option>Red Stripe</option>
+<option>Red Belt</option>
+<option>Black Stripe</option>
+</select>
 
-    <div>
-      <label>Order</label>
-      <select id="order">
-        <option value="random">Random</option>
-        <option value="sequence">Sequence</option>
-      </select>
-    </div>
+<label>What to practise</label>
+<select id="scope">
+<option value="upto">White up to my belt</option>
+<option value="only">This belt only</option>
+</select>
 
-    <div>
-      <label>Belt</label>
-      <select id="belt" onchange="resetSequence(); nextCard()"></select>
-    </div>
+<label>Mode</label>
+<select id="mode">
+<option value="ko2en">Korean → English</option>
+<option value="en2ko">English → Korean</option>
+</select>
 
-    <div>
-      <label>Category</label>
-      <select id="category" onchange="resetSequence(); nextCard()"></select>
-    </div>
+<div id="question" class="big">Ready</div>
+<div id="answer" class="answer"></div>
 
-    <div>
-      <label>Korean voice</label>
-      <select id="voiceSelect"></select>
-    </div>
-  </div>
-</div>
-
-<div class="box">
-  <div class="meta" id="meta"></div>
-  <div class="small" id="task">Press Start.</div>
-  <div class="question" id="question">Ready</div>
-  <div class="hangul" id="hangul"></div>
-
-  <input id="typed" placeholder="Optional: type your answer">
-
-  <button class="primary" onclick="nextCard()">Start / Next card</button>
-  <button onclick="playAudio()">🔊 Play Korean audio</button>
-  <button onclick="showAnswer()">Show answer</button>
-
-  <div id="answerBox" class="answer hidden"></div>
-
-  <div id="gradeBox" class="hidden">
-    <button class="good" onclick="grade(true)">✔ Correct</button>
-    <button class="bad" onclick="grade(false)">✘ Wrong</button>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><b id="seen">0</b><span>seen</span></div>
-    <div class="stat"><b id="right">0</b><span>correct</span></div>
-    <div class="stat"><b id="wrong">0</b><span>wrong</span></div>
-  </div>
-
-  <p class="small">
-    Best Korean audio requires Hangul. Romanised ITF terms may still sound English-like.
-  </p>
-</div>
+<button onclick="nextCard()">Start / Next</button>
+<button onclick="playAudio()">🔊 Audio</button>
+<button onclick="showAnswer()">Show answer</button>
 </div>
 
 <script>
-const TECHNIQUES = [
-  {belt:"White", category:"Stances", english:"Attention stance", korean:"Charyot Sogi", hangul:"차렷 서기", pronunciation:"chah-ryot soh-gee"},
-  {belt:"White", category:"Stances", english:"Bow", korean:"Kyong Ye", hangul:"경례", pronunciation:"kyong yay"},
-  {belt:"White", category:"Stances", english:"Walking stance", korean:"Gunnun Sogi", hangul:"걷는 서기", pronunciation:"goon-noon soh-gee"},
-  {belt:"White", category:"Stances", english:"Parallel ready stance", korean:"Narani Junbi Sogi", hangul:"나란히 준비 서기", pronunciation:"nah-rah-nee joon-bee soh-gee"},
-  {belt:"White", category:"Punches / Strikes", english:"Forefist punch", korean:"Ap Joomuk Jirugi", hangul:"앞주먹 지르기", pronunciation:"ahp joo-mook jee-roo-gee"},
-  {belt:"White", category:"Blocks", english:"Forearm low block", korean:"Palmok Najunde Makgi", hangul:"팔목 낮은데 막기", pronunciation:"pahl-mok nah-joon-day mahk-gee"},
-  {belt:"White", category:"Blocks", english:"Knifehand low block", korean:"Sonkal Najunde Makgi", hangul:"손칼 낮은데 막기", pronunciation:"son-kahl nah-joon-day mahk-gee"},
-  {belt:"White", category:"Blocks", english:"Inner forearm block", korean:"An Palmok Makgi", hangul:"안팔목 막기", pronunciation:"ahn pahl-mok mahk-gee"},
-  {belt:"White", category:"Kicks", english:"Front snap kick", korean:"Ap Cha Busigi", hangul:"앞 차 부수기", pronunciation:"ahp chah boo-see-gee"},
-  {belt:"White", category:"Kicks", english:"Front rising kick", korean:"Apcha Olligi", hangul:"앞차 올리기", pronunciation:"ahp-chah ol-lee-gee"},
-
-  {belt:"Yellow Stripe", category:"Stances", english:"Sitting stance", korean:"Annun Sogi", hangul:"앉는 서기", pronunciation:"ahn-noon soh-gee"},
-  {belt:"Yellow Stripe", category:"Stances", english:"L-stance", korean:"Niunja Sogi", hangul:"니은자 서기", pronunciation:"nee-oon-jah soh-gee"},
-  {belt:"Yellow Stripe", category:"Blocks", english:"Forearm guarding block", korean:"Palmok Daebi Makgi", hangul:"팔목 대비 막기", pronunciation:"pahl-mok day-bee mahk-gee"},
-  {belt:"Yellow Stripe", category:"Kicks", english:"Turning kick", korean:"Dollyo Chagi", hangul:"돌려 차기", pronunciation:"dol-lyo chah-gee"},
-  {belt:"Yellow Stripe", category:"Kicks", english:"Side turning kick", korean:"Yop Dollyo Chagi", hangul:"옆 돌려 차기", pronunciation:"yop dol-lyo chah-gee"},
-  {belt:"Yellow Stripe", category:"Patterns", english:"Chon-Ji pattern, 19 movements", korean:"Chon-Ji Tul", hangul:"천지 틀", pronunciation:"chon-jee tool"},
-
-  {belt:"Yellow", category:"Blocks", english:"Knifehand guarding block", korean:"Sonkal Daebi Makgi", hangul:"손칼 대비 막기", pronunciation:"son-kahl day-bee mahk-gee"},
-  {belt:"Yellow", category:"Blocks", english:"Twin forearm block", korean:"Sang Palmok Makgi", hangul:"쌍팔목 막기", pronunciation:"sahng pahl-mok mahk-gee"},
-  {belt:"Yellow", category:"Blocks", english:"Forearm rising block", korean:"Palmok Chookyo Makgi", hangul:"팔목 추켜 막기", pronunciation:"pahl-mok choo-kyoh mahk-gee"},
-  {belt:"Yellow", category:"Punches / Strikes", english:"Knifehand side strike", korean:"Sonkal Yop Taerigi", hangul:"손칼 옆 때리기", pronunciation:"son-kahl yop tay-ree-gee"},
-  {belt:"Yellow", category:"Kicks", english:"Side piercing kick", korean:"Yopcha Jirugi", hangul:"옆차 지르기", pronunciation:"yop-chah jee-roo-gee"},
-  {belt:"Yellow", category:"Kicks", english:"Side rising kick", korean:"Yopcha Olligi", hangul:"옆차 올리기", pronunciation:"yop-chah ol-lee-gee"},
-  {belt:"Yellow", category:"Patterns", english:"Dan-Gun pattern, 21 movements", korean:"Dan-Gun Tul", hangul:"단군 틀", pronunciation:"dahn-goon tool"},
-
-  {belt:"Green Stripe", category:"Blocks", english:"Outer forearm block", korean:"Pakat Palmok Makgi", hangul:"바깥팔목 막기", pronunciation:"pah-kat pahl-mok mahk-gee"},
-  {belt:"Green Stripe", category:"Blocks", english:"Wedging block", korean:"Hechyo Makgi", hangul:"헤쳐 막기", pronunciation:"heh-chyo mahk-gee"},
-  {belt:"Green Stripe", category:"Punches / Strikes", english:"Reverse punch", korean:"Bandae Jirugi", hangul:"반대 지르기", pronunciation:"bahn-day jee-roo-gee"},
-  {belt:"Green Stripe", category:"Punches / Strikes", english:"Straight fingertip thrust", korean:"Sun Sonkut Tulgi", hangul:"선 손끝 뚫기", pronunciation:"soon son-koot tool-gee"},
-  {belt:"Green Stripe", category:"Punches / Strikes", english:"Back fist side strike", korean:"Dung Joomuk Taerigi", hangul:"등주먹 때리기", pronunciation:"doong joo-mook tay-ree-gee"},
-  {belt:"Green Stripe", category:"Kicks", english:"Back piercing kick", korean:"Dwitcha Jirugi", hangul:"뒤차 지르기", pronunciation:"dwee-chah jee-roo-gee"},
-  {belt:"Green Stripe", category:"Kicks", english:"Reverse turning kick", korean:"Bandae Dollyo Chagi", hangul:"반대 돌려 차기", pronunciation:"bahn-day dol-lyo chah-gee"},
-  {belt:"Green Stripe", category:"Patterns", english:"Do-San pattern, 24 movements", korean:"Do-San Tul", hangul:"도산 틀", pronunciation:"doh-sahn tool"},
-
-  {belt:"Green", category:"Stances", english:"Close ready stance A", korean:"Moa Junbi Sogi A", hangul:"모아 준비 서기 A", pronunciation:"moh-ah joon-bee soh-gee ay"},
-  {belt:"Green", category:"Stances", english:"Bending stance", korean:"Guburyo Sogi", hangul:"구부려 서기", pronunciation:"goo-byuh-ryoh soh-gee"},
-  {belt:"Green", category:"Stances", english:"Fixed stance", korean:"Gojung Sogi", hangul:"고정 서기", pronunciation:"goh-joong soh-gee"},
-  {belt:"Green", category:"Punches / Strikes", english:"Knifehand inward strike", korean:"Sonkal Anuro Taerigi", hangul:"손칼 안으로 때리기", pronunciation:"son-kahl ah-noo-roh tay-ree-gee"},
-  {belt:"Green", category:"Kicks", english:"Vertical kick", korean:"Sewo Chagi", hangul:"세워 차기", pronunciation:"seh-woh chah-gee"},
-  {belt:"Green", category:"Kicks", english:"Inward vertical kick", korean:"Anuro Sewo Chagi", hangul:"안으로 세워 차기", pronunciation:"ah-noo-roh seh-woh chah-gee"},
-  {belt:"Green", category:"Kicks", english:"Outward vertical kick", korean:"Bakuro Sewo Chagi", hangul:"밖으로 세워 차기", pronunciation:"bah-koo-roh seh-woh chah-gee"},
-  {belt:"Green", category:"Kicks", english:"Crescent kick", korean:"Bandal Chagi", hangul:"반달 차기", pronunciation:"bahn-dahl chah-gee"},
-  {belt:"Green", category:"Kicks", english:"Hooking kick", korean:"Golcho Chagi", hangul:"걸쳐 차기", pronunciation:"gol-cho chah-gee"},
-  {belt:"Green", category:"Patterns", english:"Won-Hyo pattern, 28 movements", korean:"Won-Hyo Tul", hangul:"원효 틀", pronunciation:"won-hyo tool"},
-
-  {belt:"Blue Stripe", category:"Stances", english:"X-stance", korean:"Kyocha Sogi", hangul:"교차 서기", pronunciation:"kyoh-chah soh-gee"},
-  {belt:"Blue Stripe", category:"Blocks", english:"Palm hooking block", korean:"Sonbadak Golcho Makgi", hangul:"손바닥 걸쳐 막기", pronunciation:"son-bah-dak gol-cho mahk-gee"},
-  {belt:"Blue Stripe", category:"Blocks", english:"Twin knifehand block", korean:"Sang Sonkal Makgi", hangul:"쌍손칼 막기", pronunciation:"sahng son-kahl mahk-gee"},
-  {belt:"Blue Stripe", category:"Blocks", english:"Double forearm block", korean:"Doo Palmok Makgi", hangul:"두팔목 막기", pronunciation:"doo pahl-mok mahk-gee"},
-  {belt:"Blue Stripe", category:"Punches / Strikes", english:"Front elbow strike", korean:"Ap Palkup Taerigi", hangul:"앞팔꿈 때리기", pronunciation:"ahp pahl-koob tay-ree-gee"},
-  {belt:"Blue Stripe", category:"Kicks", english:"Downward kick", korean:"Naeryo Chagi", hangul:"내려 차기", pronunciation:"nay-ryoh chah-gee"},
-  {belt:"Blue Stripe", category:"Kicks", english:"Twisting kick", korean:"Bituro Chagi", hangul:"비틀어 차기", pronunciation:"bee-too-roh chah-gee"},
-  {belt:"Blue Stripe", category:"Patterns", english:"Yul-Gok pattern, 38 movements", korean:"Yul-Gok Tul", hangul:"율곡 틀", pronunciation:"yool-gok tool"},
-
-  {belt:"Blue", category:"Stances", english:"Rear foot stance", korean:"Dwitbal Sogi", hangul:"뒷발 서기", pronunciation:"dwit-bahl soh-gee"},
-  {belt:"Blue", category:"Stances", english:"Low ready stance", korean:"Nachuo Junbi Sogi", hangul:"낮춰 준비 서기", pronunciation:"nah-choo-oh joon-bee soh-gee"},
-  {belt:"Blue", category:"Blocks", english:"Reverse knifehand block", korean:"Sonkal Dung Makgi", hangul:"손칼등 막기", pronunciation:"son-kahl doong mahk-gee"},
-  {belt:"Blue", category:"Blocks", english:"Palm upward block", korean:"Sonbadak Ollyo Makgi", hangul:"손바닥 올려 막기", pronunciation:"son-bah-dak ol-lyo mahk-gee"},
-  {belt:"Blue", category:"Blocks", english:"X-fist rising block", korean:"Kyocha Joomuk Chookyo Makgi", hangul:"교차주먹 추켜 막기", pronunciation:"kyoh-chah joo-mook choo-kyoh mahk-gee"},
-  {belt:"Blue", category:"Blocks", english:"Palm pressing block", korean:"Sonbadak Noollo Makgi", hangul:"손바닥 눌러 막기", pronunciation:"son-bah-dak nool-loh mahk-gee"},
-  {belt:"Blue", category:"Blocks", english:"U-shape block", korean:"Digutja Makgi", hangul:"ㄷ자 막기", pronunciation:"dee-goot-jah mahk-gee"},
-  {belt:"Blue", category:"Kicks", english:"Flying turning kick", korean:"Twimyo Dollyo Chagi", hangul:"뛰며 돌려 차기", pronunciation:"twee-myo dol-lyo chah-gee"},
-  {belt:"Blue", category:"Kicks", english:"Flying side piercing kick", korean:"Twimyo Yopcha Jirugi", hangul:"뛰며 옆차 지르기", pronunciation:"twee-myo yop-chah jee-roo-gee"},
-  {belt:"Blue", category:"Patterns", english:"Joong-Gun pattern, 32 movements", korean:"Joong-Gun Tul", hangul:"중근 틀", pronunciation:"joong-goon tool"},
-
-  {belt:"Red Stripe", category:"Blocks", english:"X-fist pressing block", korean:"Kyocha Joomuk Noollo Makgi", hangul:"교차주먹 눌러 막기", pronunciation:"kyoh-chah joo-mook nool-loh mahk-gee"},
-  {belt:"Red Stripe", category:"Blocks", english:"W-shape block", korean:"San Makgi", hangul:"산 막기", pronunciation:"sahn mahk-gee"},
-  {belt:"Red Stripe", category:"Blocks", english:"Knifehand low guarding block", korean:"Sonkal Najunde Daebi Makgi", hangul:"손칼 낮은데 대비 막기", pronunciation:"son-kahl nah-joon-day day-bee mahk-gee"},
-  {belt:"Red Stripe", category:"Punches / Strikes", english:"Upset fingertip thrust", korean:"Dwijibun Sonkut Tulgi", hangul:"뒤집은 손끝 뚫기", pronunciation:"dwee-jee-boon son-koot tool-gee"},
-  {belt:"Red Stripe", category:"Punches / Strikes", english:"Back fist side-back strike", korean:"Dung Joomuk Yopdwi Taerigi", hangul:"등주먹 옆뒤 때리기", pronunciation:"doong joo-mook yop-dwee tay-ree-gee"},
-  {belt:"Red Stripe", category:"Punches / Strikes", english:"Twin side elbow thrust", korean:"Sang Yop Palkup Tulgi", hangul:"쌍 옆팔꿈 뚫기", pronunciation:"sahng yop pahl-koob tool-gee"},
-  {belt:"Red Stripe", category:"Kicks", english:"Upward kick", korean:"Ollyo Chagi", hangul:"올려 차기", pronunciation:"ol-lyo chah-gee"},
-  {belt:"Red Stripe", category:"Kicks", english:"Flying back piercing kick", korean:"Twimyo Dwitcha Jirugi", hangul:"뛰며 뒤차 지르기", pronunciation:"twee-myo dwee-chah jee-roo-gee"},
-  {belt:"Red Stripe", category:"Patterns", english:"Toi-Gye pattern, 37 movements", korean:"Toi-Gye Tul", hangul:"퇴계 틀", pronunciation:"toy-gye tool"}
+const beltOrder=[
+"White","Yellow Stripe","Yellow","Green Stripe","Green",
+"Blue Stripe","Blue","Red Stripe","Red Belt","Black Stripe"
 ];
 
-let current = null;
-let direction = "ko2en";
-let seqIndex = 0;
-let seen = 0;
-let right = 0;
-let wrong = 0;
-let voices = [];
+const cards=[
+{belt:"White",english:"Forefist punch",korean:"Ap Joomuk Jirugi",hangul:"앞주먹 지르기"},
+{belt:"White",english:"Forearm low block",korean:"Palmok Najunde Makgi",hangul:"팔목 낮은데 막기"},
+{belt:"White",english:"Knifehand low block",korean:"Sonkal Najunde Makgi",hangul:"손칼 낮은데 막기"},
+{belt:"White",english:"Front snap kick",korean:"Ap Cha Busigi",hangul:"앞 차 부수기"},
 
-function id(x){ return document.getElementById(x); }
+{belt:"Yellow Stripe",english:"Turning kick",korean:"Dollyo Chagi",hangul:"돌려 차기"},
+{belt:"Yellow Stripe",english:"Forearm guarding block",korean:"Palmok Daebi Makgi",hangul:"팔목 대비 막기"},
+{belt:"Yellow Stripe",english:"L-ready stance",korean:"Niunja Junbi Sogi",hangul:"니은자 준비 서기"},
 
-function unique(field){
-  const values = ["All"];
-  TECHNIQUES.forEach(t => {
-    if(!values.includes(t[field])) values.push(t[field]);
+{belt:"Yellow",english:"Side piercing kick",korean:"Yopcha Jirugi",hangul:"옆차 지르기"},
+{belt:"Yellow",english:"Knifehand guarding block",korean:"Sonkal Daebi Makgi",hangul:"손칼 대비 막기"},
+{belt:"Yellow",english:"Twin forearm block",korean:"Sang Palmok Makgi",hangul:"쌍팔목 막기"},
+
+{belt:"Green Stripe",english:"Reverse punch",korean:"Bandae Jirugi",hangul:"반대 지르기"},
+{belt:"Green Stripe",english:"Back piercing kick",korean:"Dwitcha Jirugi",hangul:"뒤차 지르기"},
+{belt:"Green Stripe",english:"Outer forearm block",korean:"Pakat Palmok Makgi",hangul:"바깥팔목 막기"},
+
+{belt:"Green",english:"Vertical kick",korean:"Sewo Chagi",hangul:"세워 차기"},
+{belt:"Green",english:"Bending stance",korean:"Guburyo Sogi",hangul:"구부려 서기"},
+{belt:"Green",english:"Hooking kick",korean:"Golcho Chagi",hangul:"걸쳐 차기"},
+
+{belt:"Blue Stripe",english:"Downward kick",korean:"Naeryo Chagi",hangul:"내려 차기"},
+{belt:"Blue Stripe",english:"Twin knifehand block",korean:"Sang Sonkal Makgi",hangul:"쌍손칼 막기"},
+{belt:"Blue Stripe",english:"X-stance",korean:"Kyocha Sogi",hangul:"교차 서기"},
+
+{belt:"Blue",english:"Rear foot stance",korean:"Dwitbal Sogi",hangul:"뒷발 서기"},
+{belt:"Blue",english:"Flying turning kick",korean:"Twimyo Dollyo Chagi",hangul:"뛰며 돌려 차기"},
+{belt:"Blue",english:"Palm pressing block",korean:"Sonbadak Noollo Makgi",hangul:"손바닥 눌러 막기"},
+
+{belt:"Red Stripe",english:"Upward kick",korean:"Ollyo Chagi",hangul:"올려 차기"},
+{belt:"Red Stripe",english:"W-shape block",korean:"San Makgi",hangul:"산 막기"},
+{belt:"Red Stripe",english:"Flying back piercing kick",korean:"Twimyo Dwitcha Jirugi",hangul:"뛰며 뒤차 지르기"},
+
+{belt:"Red Belt",english:"Palm pushing block",korean:"Sonbadak Miro Makgi",hangul:"손바닥 밀어 막기"},
+{belt:"Red Belt",english:"Flying twisting kick",korean:"Twimyo Bituro Chagi",hangul:"뛰며 비틀어 차기"},
+{belt:"Red Belt",english:"Hwa-Rang pattern",korean:"Hwa-Rang Tul",hangul:"화랑 틀"},
+
+{belt:"Black Stripe",english:"X-knifehand checking block",korean:"Kyocha Sonkal Momchau Makgi",hangul:"교차 손칼 멈춰 막기"},
+{belt:"Black Stripe",english:"Twin palm upward block",korean:"Sang Sonbadak Ollyo Makgi",hangul:"쌍 손바닥 올려 막기"},
+{belt:"Black Stripe",english:"Choong-Moo pattern",korean:"Choong-Moo Tul",hangul:"충무 틀"}
+];
+
+let current=null;
+
+function allowedCards(){
+  const belt=document.getElementById("belt").value;
+  const scope=document.getElementById("scope").value;
+  const currentIndex=beltOrder.indexOf(belt);
+
+  return cards.filter(card=>{
+    const cardIndex=beltOrder.indexOf(card.belt);
+    if(scope==="only") return card.belt===belt;
+    return cardIndex<=currentIndex;
   });
-  return values;
-}
-
-function fillSelect(selectId, values){
-  const s = id(selectId);
-  s.innerHTML = "";
-  values.forEach(v => {
-    const o = document.createElement("option");
-    o.value = v;
-    o.textContent = v;
-    s.appendChild(o);
-  });
-}
-
-function loadVoices(){
-  voices = speechSynthesis.getVoices();
-  const koreanVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith("ko"));
-  const select = id("voiceSelect");
-  select.innerHTML = "";
-
-  if(koreanVoices.length === 0){
-    const o = document.createElement("option");
-    o.textContent = "No Korean voice found";
-    o.value = "";
-    select.appendChild(o);
-    return;
-  }
-
-  koreanVoices.forEach((v, i) => {
-    const o = document.createElement("option");
-    o.value = voices.indexOf(v);
-    o.textContent = v.name + " (" + v.lang + ")";
-    select.appendChild(o);
-  });
-}
-
-function filteredCards(){
-  const b = id("belt").value;
-  const c = id("category").value;
-  return TECHNIQUES.filter(t =>
-    (b === "All" || t.belt === b) &&
-    (c === "All" || t.category === c)
-  );
-}
-
-function resetSequence(){
-  seqIndex = 0;
-}
-
-function chooseCard(){
-  const cards = filteredCards();
-  if(cards.length === 0) return null;
-
-  if(id("order").value === "sequence"){
-    const card = cards[seqIndex % cards.length];
-    seqIndex++;
-    return card;
-  }
-
-  return cards[Math.floor(Math.random() * cards.length)];
 }
 
 function nextCard(){
-  current = chooseCard();
-  if(!current) return;
-
-  const mode = id("mode").value;
-  direction = mode === "mixed"
-    ? (Math.random() < 0.5 ? "ko2en" : "en2ko")
-    : mode;
-
-  id("meta").innerHTML =
-    "<span>" + current.belt + "</span><span>" + current.category + "</span>";
-
-  id("task").textContent =
-    direction === "ko2en" ? "Translate to English" : "Think of the Korean term";
-
-  id("question").textContent =
-    direction === "ko2en" ? current.korean : current.english;
-
-  id("hangul").textContent =
-    direction === "ko2en" ? current.hangul : "";
-
-  id("typed").value = "";
-  id("answerBox").className = "answer hidden";
-  id("gradeBox").className = "hidden";
+  const list=allowedCards();
+  current=list[Math.floor(Math.random()*list.length)];
+  document.getElementById("answer").innerText="";
+  const mode=document.getElementById("mode").value;
+  document.getElementById("question").innerText=
+    mode==="ko2en" ? current.korean : current.english;
 }
 
 function showAnswer(){
   if(!current) nextCard();
-
-  const main = direction === "ko2en" ? current.english : current.korean;
-
-  id("answerBox").innerHTML =
-    '<div class="answerMain">' + main + '</div>' +
-    '<b>English:</b> ' + current.english + '<br>' +
-    '<b>Korean:</b> ' + current.korean + '<br>' +
-    '<b>Hangul:</b> ' + current.hangul + '<br>' +
-    '<b>Pronunciation:</b> ' + current.pronunciation + '<br>' +
-    '<b>Belt:</b> ' + current.belt + '<br>' +
-    '<b>Category:</b> ' + current.category;
-
-  id("answerBox").className = "answer";
-  id("gradeBox").className = "";
-
-  if(direction === "en2ko"){
-    playAudio();
-  }
+  const mode=document.getElementById("mode").value;
+  document.getElementById("answer").innerText=
+    mode==="ko2en" ? current.english : current.korean;
 }
 
 function playAudio(){
   if(!current) return;
-
   speechSynthesis.cancel();
-
-  const u = new SpeechSynthesisUtterance(current.hangul || current.korean);
-  u.lang = "ko-KR";
-  u.rate = 0.75;
-  u.pitch = 1.0;
-
-  const selectedVoiceIndex = id("voiceSelect").value;
-  if(selectedVoiceIndex !== "" && voices[selectedVoiceIndex]){
-    u.voice = voices[selectedVoiceIndex];
-  }
-
+  const u=new SpeechSynthesisUtterance(current.hangul || current.korean);
+  u.lang="ko-KR";
+  u.rate=0.75;
   speechSynthesis.speak(u);
 }
 
-function grade(ok){
-  seen++;
-  if(ok) right++;
-  else wrong++;
-
-  id("seen").textContent = seen;
-  id("right").textContent = right;
-  id("wrong").textContent = wrong;
-
-  nextCard();
-}
-
-function init(){
-  fillSelect("belt", unique("belt"));
-  fillSelect("category", unique("category"));
-
-  if("speechSynthesis" in window){
-    loadVoices();
-    speechSynthesis.onvoiceschanged = loadVoices;
-  }
-
-  id("typed").addEventListener("keydown", e => {
-    if(e.key === "Enter") showAnswer();
-  });
-
-  nextCard();
-}
-
-init();
+nextCard();
 </script>
 </body>
 </html>
