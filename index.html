@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TKD Trainer</title>
+<style>
+body{font-family:Arial;background:#101318;color:white;padding:20px}
+button{font-size:20px;padding:14px;margin:8px 0;width:100%}
+.card{background:#1b2029;padding:20px;border-radius:16px}
+.big{font-size:36px;font-weight:bold}
+</style>
+</head>
+<body>
+<h1>TKD Trainer</h1>
+
+<div class="card">
+  <p id="mode">Korean → English</p>
+  <div id="question" class="big">Ready</div>
+  <button onclick="nextCard()">Start / Next</button>
+  <button onclick="playAudio()">🔊 Audio</button>
+  <button onclick="showAnswer()">Show answer</button>
+  <p id="answer"></p>
+  <button onclick="switchMode()">Switch mode</button>
+</div>
+
+<script>
+const cards = [
+  {english:"Turning kick", korean:"Dollyo Chagi", hangul:"돌려 차기"},
+  {english:"Side piercing kick", korean:"Yopcha Jirugi", hangul:""},
+  {english:"Forearm low block", korean:"Palmok Najunde Makgi", hangul:""},
+  {english:"Knifehand guarding block", korean:"Sonkal Daebi Makgi", hangul:""},
+  {english:"Walking stance", korean:"Gunnun Sogi", hangul:""}
+];
+
+let current = null;
+let koreanToEnglish = true;
+
+function nextCard(){
+  current = cards[Math.floor(Math.random()*cards.length)];
+  document.getElementById("question").innerText =
+    koreanToEnglish ? current.korean : current.english;
+  document.getElementById("answer").innerText = "";
+  document.getElementById("mode").innerText =
+    koreanToEnglish ? "Korean → English" : "English → Korean";
+}
+
+function showAnswer(){
+  if(!current) nextCard();
+  document.getElementById("answer").innerText =
+    koreanToEnglish ? current.english : current.korean;
+  if(!koreanToEnglish) playAudio();
+}
+
+function switchMode(){
+  koreanToEnglish = !koreanToEnglish;
+  nextCard();
+}
+
+function playAudio(){
+  if(!current) return;
+  const text = current.hangul || current.korean;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = current.hangul ? "ko-KR" : "en-US";
+  u.rate = 0.75;
+  speechSynthesis.speak(u);
+}
+
+nextCard();
+</script>
+</body>
+</html>
