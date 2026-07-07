@@ -1,144 +1,207 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TKD Trainer</title>
 <style>
-body{font-family:Arial;background:#101318;color:white;padding:20px}
-.card{background:#1b2029;padding:20px;border-radius:16px}
-button,select{font-size:18px;padding:12px;margin:8px 0;width:100%}
-.big{font-size:34px;font-weight:bold;margin:20px 0}
-.answer{font-size:24px;color:#ffcc33}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#101318;color:white;padding:18px;margin:0}
+.app{max-width:780px;margin:auto}
+.card{background:#1b2029;padding:18px;border-radius:18px;border:1px solid #333b4a;margin-top:14px}
+label{display:block;color:#aab4c4;font-size:13px;margin-top:10px;margin-bottom:4px}
+button,select{font-size:17px;padding:12px;margin:6px 0;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #333b4a}
+select{background:#222936;color:white}
+button{background:#31394a;color:white;font-weight:700;border:0}
+.primary{background:#ffcc33;color:#111}
+.big{font-size:36px;font-weight:800;margin:18px 0;line-height:1.1}
+.answer{font-size:24px;color:#ffcc33;margin-top:14px;line-height:1.35}
+.meta{color:#aab4c4;font-size:13px;margin-top:8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
 </style>
 </head>
+
 <body>
-<h1>TKD Trainer</h1>
+<div class="app">
+<h1>ITF TKD Trainer</h1>
+<p style="color:#aab4c4">Practise common Korean terms or belt-specific techniques.</p>
 
 <div class="card">
-<label>Your belt</label>
-<select id="belt">
-<option>White</option>
-<option>Yellow Stripe</option>
-<option>Yellow</option>
-<option>Green Stripe</option>
-<option>Green</option>
-<option>Blue Stripe</option>
-<option>Blue</option>
-<option>Red Stripe</option>
-<option>Red Belt</option>
-<option>Black Stripe</option>
-</select>
+<div class="row">
 
-<label>What to practise</label>
-<select id="scope">
-<option value="upto">White up to my belt</option>
-<option value="only">This belt only</option>
+<div>
+<label>Practice type</label>
+<select id="practiceType" onchange="updateControls(); nextCard()">
+<option value="common">Common Korean terms</option>
+<option value="techniques">Techniques</option>
 </select>
+</div>
 
-<label>Mode</label>
-<select id="mode">
+<div>
+<label>Direction</label>
+<select id="direction" onchange="nextCard()">
 <option value="ko2en">Korean → English</option>
 <option value="en2ko">English → Korean</option>
 </select>
+</div>
 
+<div id="beltBox">
+<label>Belt</label>
+<select id="belt" onchange="nextCard()"></select>
+</div>
+
+<div id="scopeBox">
+<label>Technique range</label>
+<select id="scope" onchange="nextCard()">
+<option value="upto">White up to this belt</option>
+<option value="only">This belt only</option>
+</select>
+</div>
+
+<div>
+<label>Category</label>
+<select id="category" onchange="nextCard()"></select>
+</div>
+
+</div>
+</div>
+
+<div class="card">
+<div id="meta" class="meta"></div>
 <div id="question" class="big">Ready</div>
-<div id="answer" class="answer"></div>
-
-<button onclick="nextCard()">Start / Next</button>
+<button class="primary" onclick="nextCard()">Start / Next</button>
 <button onclick="playAudio()">🔊 Audio</button>
 <button onclick="showAnswer()">Show answer</button>
+<div id="answer" class="answer"></div>
+</div>
 </div>
 
 <script>
-const beltOrder=[
+const BELT_ORDER = [
 "White","Yellow Stripe","Yellow","Green Stripe","Green",
 "Blue Stripe","Blue","Red Stripe","Red Belt","Black Stripe"
 ];
 
-const cards=[
-{belt:"White",english:"Forefist punch",korean:"Ap Joomuk Jirugi",hangul:"앞주먹 지르기"},
-{belt:"White",english:"Forearm low block",korean:"Palmok Najunde Makgi",hangul:"팔목 낮은데 막기"},
-{belt:"White",english:"Knifehand low block",korean:"Sonkal Najunde Makgi",hangul:"손칼 낮은데 막기"},
-{belt:"White",english:"Front snap kick",korean:"Ap Cha Busigi",hangul:"앞 차 부수기"},
+let COMMON_TERMS = [];
+let TECHNIQUES = [];
+let current = null;
 
-{belt:"Yellow Stripe",english:"Turning kick",korean:"Dollyo Chagi",hangul:"돌려 차기"},
-{belt:"Yellow Stripe",english:"Forearm guarding block",korean:"Palmok Daebi Makgi",hangul:"팔목 대비 막기"},
-{belt:"Yellow Stripe",english:"L-ready stance",korean:"Niunja Junbi Sogi",hangul:"니은자 준비 서기"},
+function id(x){return document.getElementById(x);}
 
-{belt:"Yellow",english:"Side piercing kick",korean:"Yopcha Jirugi",hangul:"옆차 지르기"},
-{belt:"Yellow",english:"Knifehand guarding block",korean:"Sonkal Daebi Makgi",hangul:"손칼 대비 막기"},
-{belt:"Yellow",english:"Twin forearm block",korean:"Sang Palmok Makgi",hangul:"쌍팔목 막기"},
+async function loadData(){
+  COMMON_TERMS = await fetch("common_terms.json").then(r=>r.json());
+  TECHNIQUES = await fetch("techniques.json").then(r=>r.json());
+  fillSelect(id("belt"), BELT_ORDER);
+  updateControls();
+  nextCard();
+}
 
-{belt:"Green Stripe",english:"Reverse punch",korean:"Bandae Jirugi",hangul:"반대 지르기"},
-{belt:"Green Stripe",english:"Back piercing kick",korean:"Dwitcha Jirugi",hangul:"뒤차 지르기"},
-{belt:"Green Stripe",english:"Outer forearm block",korean:"Pakat Palmok Makgi",hangul:"바깥팔목 막기"},
+function unique(arr,key){
+  return ["All",...Array.from(new Set(arr.map(x=>x[key]).filter(Boolean)))];
+}
 
-{belt:"Green",english:"Vertical kick",korean:"Sewo Chagi",hangul:"세워 차기"},
-{belt:"Green",english:"Bending stance",korean:"Guburyo Sogi",hangul:"구부려 서기"},
-{belt:"Green",english:"Hooking kick",korean:"Golcho Chagi",hangul:"걸쳐 차기"},
+function fillSelect(el,values){
+  el.innerHTML="";
+  values.forEach(v=>{
+    const o=document.createElement("option");
+    o.value=v;
+    o.textContent=v;
+    el.appendChild(o);
+  });
+}
 
-{belt:"Blue Stripe",english:"Downward kick",korean:"Naeryo Chagi",hangul:"내려 차기"},
-{belt:"Blue Stripe",english:"Twin knifehand block",korean:"Sang Sonkal Makgi",hangul:"쌍손칼 막기"},
-{belt:"Blue Stripe",english:"X-stance",korean:"Kyocha Sogi",hangul:"교차 서기"},
+function updateControls(){
+  const type=id("practiceType").value;
+  id("beltBox").style.display=type==="techniques"?"block":"none";
+  id("scopeBox").style.display=type==="techniques"?"block":"none";
 
-{belt:"Blue",english:"Rear foot stance",korean:"Dwitbal Sogi",hangul:"뒷발 서기"},
-{belt:"Blue",english:"Flying turning kick",korean:"Twimyo Dollyo Chagi",hangul:"뛰며 돌려 차기"},
-{belt:"Blue",english:"Palm pressing block",korean:"Sonbadak Noollo Makgi",hangul:"손바닥 눌러 막기"},
-
-{belt:"Red Stripe",english:"Upward kick",korean:"Ollyo Chagi",hangul:"올려 차기"},
-{belt:"Red Stripe",english:"W-shape block",korean:"San Makgi",hangul:"산 막기"},
-{belt:"Red Stripe",english:"Flying back piercing kick",korean:"Twimyo Dwitcha Jirugi",hangul:"뛰며 뒤차 지르기"},
-
-{belt:"Red Belt",english:"Palm pushing block",korean:"Sonbadak Miro Makgi",hangul:"손바닥 밀어 막기"},
-{belt:"Red Belt",english:"Flying twisting kick",korean:"Twimyo Bituro Chagi",hangul:"뛰며 비틀어 차기"},
-{belt:"Red Belt",english:"Hwa-Rang pattern",korean:"Hwa-Rang Tul",hangul:"화랑 틀"},
-
-{belt:"Black Stripe",english:"X-knifehand checking block",korean:"Kyocha Sonkal Momchau Makgi",hangul:"교차 손칼 멈춰 막기"},
-{belt:"Black Stripe",english:"Twin palm upward block",korean:"Sang Sonbadak Ollyo Makgi",hangul:"쌍 손바닥 올려 막기"},
-{belt:"Black Stripe",english:"Choong-Moo pattern",korean:"Choong-Moo Tul",hangul:"충무 틀"}
-];
-
-let current=null;
+  const data=type==="common"?COMMON_TERMS:TECHNIQUES;
+  fillSelect(id("category"), unique(data,"category"));
+}
 
 function allowedCards(){
-  const belt=document.getElementById("belt").value;
-  const scope=document.getElementById("scope").value;
-  const currentIndex=beltOrder.indexOf(belt);
+  const type=id("practiceType").value;
+  const cat=id("category").value;
 
-  return cards.filter(card=>{
-    const cardIndex=beltOrder.indexOf(card.belt);
-    if(scope==="only") return card.belt===belt;
-    return cardIndex<=currentIndex;
-  });
+  let data=type==="common"?COMMON_TERMS:TECHNIQUES;
+
+  if(cat!=="All"){
+    data=data.filter(x=>x.category===cat);
+  }
+
+  if(type==="techniques"){
+    const belt=id("belt").value;
+    const scope=id("scope").value;
+    const beltIndex=BELT_ORDER.indexOf(belt);
+
+    data=data.filter(x=>{
+      const itemIndex=BELT_ORDER.indexOf(x.belt);
+      if(scope==="only") return x.belt===belt;
+      return itemIndex>=0 && itemIndex<=beltIndex;
+    });
+  }
+
+  return data;
 }
 
 function nextCard(){
   const list=allowedCards();
+  id("answer").innerHTML="";
+
+  if(!list.length){
+    current=null;
+    id("question").textContent="No cards for this selection";
+    id("meta").textContent="";
+    return;
+  }
+
   current=list[Math.floor(Math.random()*list.length)];
-  document.getElementById("answer").innerText="";
-  const mode=document.getElementById("mode").value;
-  document.getElementById("question").innerText=
-    mode==="ko2en" ? current.korean : current.english;
+
+  const dir=id("direction").value;
+  id("question").textContent=dir==="ko2en" ? current.korean : current.english;
+
+  id("meta").textContent =
+    id("practiceType").value==="common"
+    ? current.category
+    : current.belt+" • "+current.category;
 }
 
 function showAnswer(){
   if(!current) nextCard();
-  const mode=document.getElementById("mode").value;
-  document.getElementById("answer").innerText=
-    mode==="ko2en" ? current.english : current.korean;
+  if(!current) return;
+
+  const dir=id("direction").value;
+  const main=dir==="ko2en" ? current.english : current.korean;
+
+  let html="<b>"+main+"</b>";
+
+  if(current.hangul){
+    html+="<br><span style='color:white'>"+current.hangul+"</span>";
+  }
+
+  if(current.belt){
+    html+="<br><span style='color:#aab4c4'>"+current.belt+" • "+current.category+"</span>";
+  } else {
+    html+="<br><span style='color:#aab4c4'>"+current.category+"</span>";
+  }
+
+  id("answer").innerHTML=html;
 }
 
 function playAudio(){
-  if(!current) return;
+  if(!current || !window.speechSynthesis) return;
+
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(current.hangul || current.korean);
-  u.lang="ko-KR";
+
+  const text=current.hangul || current.korean;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=current.hangul ? "ko-KR" : "en-US";
   u.rate=0.75;
+
   speechSynthesis.speak(u);
 }
 
-nextCard();
+loadData();
 </script>
 </body>
 </html>
