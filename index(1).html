@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TKD Trainer</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#101318;color:white;padding:18px;margin:0}
+.app{max-width:780px;margin:auto}
+.card{background:#1b2029;padding:18px;border-radius:18px;border:1px solid #333b4a;margin-top:14px}
+label{display:block;color:#aab4c4;font-size:13px;margin-top:10px;margin-bottom:4px}
+button,select,input{font-size:17px;padding:12px;margin:6px 0;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #333b4a}
+select,input{background:#222936;color:white}
+button{background:#31394a;color:white;font-weight:700;border:0}
+.primary{background:#ffcc33;color:#111}
+.big{font-size:36px;font-weight:800;margin:18px 0;line-height:1.1}
+.answer{font-size:24px;color:#ffcc33;margin-top:14px;line-height:1.35}
+.meta{color:#aab4c4;font-size:13px;margin-top:8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>ITF TKD Trainer</h1>
+<p style="color:#aab4c4">Practise common Korean terms or belt-specific techniques.</p>
+
+<div class="card">
+<div class="row">
+<div>
+<label>Practice type</label>
+<select id="practiceType" onchange="updateControls(); nextCard()">
+<option value="common">Common Korean terms</option>
+<option value="techniques">Techniques</option>
+</select>
+</div>
+
+<div>
+<label>Direction</label>
+<select id="direction" onchange="nextCard()">
+<option value="ko2en">Korean → English</option>
+<option value="en2ko">English → Korean</option>
+</select>
+</div>
+
+<div id="beltBox">
+<label>Belt</label>
+<select id="belt" onchange="nextCard()"></select>
+</div>
+
+<div id="scopeBox">
+<label>Technique range</label>
+<select id="scope" onchange="nextCard()">
+<option value="upto">White up to this belt</option>
+<option value="only">This belt only</option>
+</select>
+</div>
+
+<div>
+<label>Category</label>
+<select id="category" onchange="nextCard()"></select>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div id="meta" class="meta"></div>
+<div id="question" class="big">Ready</div>
+<button class="primary" onclick="nextCard()">Start / Next</button>
+<button onclick="playAudio()">🔊 Audio</button>
+<button onclick="showAnswer()">Show answer</button>
+<div id="answer" class="answer"></div>
+</div>
+</div>
+
+<script>
+const COMMON_TERMS = [
+  {
+    "english": "Front",
+    "korean": "Ap",
+    "hangul": "앞",
+    "pronunciation": "ahp",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Back",
+    "korean": "Dwi",
+    "hangul": "뒤",
+    "pronunciation": "dwee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Rear",
+    "korean": "Dwit",
+    "hangul": "뒷",
+    "pronunciation": "dwit",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Side",
+    "korean": "Yop",
+    "hangul": "옆",
+    "pronunciation": "yop",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Inward",
+    "korean": "Anuro",
+    "hangul": "안으로",
+    "pronunciation": "ah-noo-roh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Outward",
+    "korean": "Bakuro",
+    "hangul": "밖으로",
+    "pronunciation": "bah-koo-roh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Reverse / Opposite",
+    "korean": "Bandae",
+    "hangul": "반대",
+    "pronunciation": "ban-dae",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Turning",
+    "korean": "Dollyo",
+    "hangul": "돌려",
+    "pronunciation": "dol-lyoh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Circular",
+    "korean": "Dollimyo",
+    "hangul": "돌리며",
+    "pronunciation": "dol-lee-myoh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Flying",
+    "korean": "Twimyo",
+    "hangul": "뛰며",
+    "pronunciation": "twee-myoh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Downward",
+    "korean": "Naeryo",
+    "hangul": "내려",
+    "pronunciation": "nay-ryoh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Upward",
+    "korean": "Ollyo",
+    "hangul": "올려",
+    "pronunciation": "ol-lyoh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Pressing",
+    "korean": "Noollo",
+    "hangul": "눌러",
+    "pronunciation": "nool-loh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Pushing",
+    "korean": "Miro",
+    "hangul": "밀어",
+    "pronunciation": "mee-roh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Hooking",
+    "korean": "Golcho",
+    "hangul": "걸쳐",
+    "pronunciation": "gol-choh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Twisting",
+    "korean": "Bituro",
+    "hangul": "비틀어",
+    "pronunciation": "bee-too-roh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Low",
+    "korean": "Najunde",
+    "hangul": "낮은데",
+    "pronunciation": "nah-joon-day",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Middle",
+    "korean": "Kaunde",
+    "hangul": "가운데",
+    "pronunciation": "kah-oon-day",
+    "category": "Common Terms"
+  },
+  {
+    "english": "High",
+    "korean": "Nopunde",
+    "hangul": "높은데",
+    "pronunciation": "noh-poon-day",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Forearm",
+    "korean": "Palmok",
+    "hangul": "팔목",
+    "pronunciation": "pahl-mok",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Inner forearm",
+    "korean": "An Palmok",
+    "hangul": "안팔목",
+    "pronunciation": "ahn pahl-mok",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Outer forearm",
+    "korean": "Pakat Palmok",
+    "hangul": "바깥팔목",
+    "pronunciation": "pah-kaht pahl-mok",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Fist",
+    "korean": "Joomuk",
+    "hangul": "주먹",
+    "pronunciation": "joo-mook",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Forefist",
+    "korean": "Ap Joomuk",
+    "hangul": "앞주먹",
+    "pronunciation": "ahp joo-mook",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Back fist",
+    "korean": "Dung Joomuk",
+    "hangul": "등주먹",
+    "pronunciation": "doong joo-mook",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Knifehand",
+    "korean": "Sonkal",
+    "hangul": "손칼",
+    "pronunciation": "son-kahl",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Reverse knifehand",
+    "korean": "Sonkal Dung",
+    "hangul": "손칼등",
+    "pronunciation": "son-kahl doong",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Palm",
+    "korean": "Sonbadak",
+    "hangul": "손바닥",
+    "pronunciation": "son-bah-dak",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Fingertip",
+    "korean": "Sonkut",
+    "hangul": "손끝",
+    "pronunciation": "son-koot",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Elbow",
+    "korean": "Palkup",
+    "hangul": "팔굽",
+    "pronunciation": "pahl-koob",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Foot",
+    "korean": "Bal",
+    "hangul": "발",
+    "pronunciation": "bahl",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Sole of foot",
+    "korean": "Balbadak",
+    "hangul": "발바닥",
+    "pronunciation": "bahl-bah-dak",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Block",
+    "korean": "Makgi",
+    "hangul": "막기",
+    "pronunciation": "mahk-gee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Punch",
+    "korean": "Jirugi",
+    "hangul": "지르기",
+    "pronunciation": "jee-roo-gee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Strike",
+    "korean": "Taerigi",
+    "hangul": "때리기",
+    "pronunciation": "tay-ree-gee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Thrust",
+    "korean": "Tulgi",
+    "hangul": "뚫기",
+    "pronunciation": "tool-gee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Kick",
+    "korean": "Chagi",
+    "hangul": "차기",
+    "pronunciation": "chah-gee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Ready",
+    "korean": "Junbi",
+    "hangul": "준비",
+    "pronunciation": "joon-bee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Guarding",
+    "korean": "Daebi",
+    "hangul": "대비",
+    "pronunciation": "day-bee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Stance",
+    "korean": "Sogi",
+    "hangul": "서기",
+    "pronunciation": "soh-gee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Ready stance",
+    "korean": "Junbi Sogi",
+    "hangul": "준비 서기",
+    "pronunciation": "joon-bee soh-gee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Walking",
+    "korean": "Gunnun",
+    "hangul": "걷는",
+    "pronunciation": "goon-noon",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Sitting",
+    "korean": "Annun",
+    "hangul": "앉는",
+    "pronunciation": "ahn-noon",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Parallel",
+    "korean": "Narani",
+    "hangul": "나란히",
+    "pronunciation": "nah-rah-nee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "L-shape",
+    "korean": "Niunja",
+    "hangul": "니은자",
+    "pronunciation": "nee-oon-jah",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Cross",
+    "korean": "Kyocha",
+    "hangul": "교차",
+    "pronunciation": "kyoh-cha",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Fixed",
+    "korean": "Gojung",
+    "hangul": "고정",
+    "pronunciation": "goh-joong",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Vertical",
+    "korean": "Sewo",
+    "hangul": "세워",
+    "pronunciation": "seh-woh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Bending",
+    "korean": "Guburyo",
+    "hangul": "구부려",
+    "pronunciation": "goo-byuh-ryoh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Attention",
+    "korean": "Charyot",
+    "hangul": "차렷",
+    "pronunciation": "chah-ryot",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Bow",
+    "korean": "Kyong Ye",
+    "hangul": "경례",
+    "pronunciation": "kyung-ye",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Ready",
+    "korean": "Junbi",
+    "hangul": "준비",
+    "pronunciation": "joon-bee",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Begin",
+    "korean": "Shijak",
+    "hangul": "시작",
+    "pronunciation": "shee-jahk",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Stop",
+    "korean": "Guman",
+    "hangul": "그만",
+    "pronunciation": "goo-mahn",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Return",
+    "korean": "Baro",
+    "hangul": "바로",
+    "pronunciation": "bah-roh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "At ease",
+    "korean": "Swiyo",
+    "hangul": "쉬어",
+    "pronunciation": "shwee-oh",
+    "category": "Common Terms"
+  },
+  {
+    "english": "Courtesy",
+    "korean": "Ye-ui",
+    "hangul": "예의",
+    "pronunciation": "yeh-wee",
+    "category": "Common Terms",
+    "belt": "Blue"
+  },
+  {
+    "english": "Integrity",
+    "korean": "Yeom-chi",
+    "hangul": "염치",
+    "pronunciation": "yuhm-chee",
+    "category": "Common Terms",
+    "belt": "Blue"
+  },
+  {
+    "english": "Perseverance",
+    "korean": "In-nae",
+    "hangul": "인내",
+    "pronunciation": "in-nay",
+    "category": "Common Terms",
+    "belt": "Blue"
+  },
+  {
+    "english": "Self-control",
+    "korean": "Geuk-gi",
+    "hangul": "극기",
+    "pronunciation": "geuk-gee",
+    "category": "Common Terms",
+    "belt": "Blue"
+  },
+  {
+    "english": "Indomitable spirit",
+    "korean": "Baekjeol Bulgul",
+    "hangul": "백절불굴",
+    "pronunciation": "baek-jeol bool-gool",
+    "category": "Common Terms",
+    "belt": "Blue"
+  },
+  {
+    "english": "Theory of Power",
+    "korean": "Him Ui Wolli",
+    "hangul": "힘의 원리",
+    "pronunciation": "him oo-ee woll-ee",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Reaction Force",
+    "korean": "Bandong Ryok",
+    "hangul": "반동력",
+    "pronunciation": "ban-dong ryok",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Concentration",
+    "korean": "Jip Joong",
+    "hangul": "집중",
+    "pronunciation": "jip joong",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Equilibrium",
+    "korean": "Kyun Hyung",
+    "hangul": "균형",
+    "pronunciation": "kyoon hyung",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Breath Control",
+    "korean": "Hohup Jojul",
+    "hangul": "호흡 조절",
+    "pronunciation": "ho-hup jo-jool",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Mass",
+    "korean": "Jillyang",
+    "hangul": "질량",
+    "pronunciation": "jil-lyang",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Speed",
+    "korean": "Sokdo",
+    "hangul": "속도",
+    "pronunciation": "sok-doh",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Training hall",
+    "korean": "Dojang",
+    "hangul": "도장",
+    "pronunciation": "doh-jahng",
+    "category": "Common Terms",
+    "belt": "Red Stripe"
+  }
+];
+const TECHNIQUES = [
+  {
+    "english": "Attention stance",
+    "korean": "Charyot Sogi",
+    "hangul": "차렷 서기",
+    "pronunciation": "chah-ryot soh-gee",
+    "belt": "White",
+    "category": "Stances"
+  },
+  {
+    "english": "Walking ready stance",
+    "korean": "Gunnun Junbi Sogi",
+    "hangul": "걷는 준비 서기",
+    "pronunciation": "goon-noon joon-bee soh-gee",
+    "belt": "White",
+    "category": "Stances"
+  },
+  {
+    "english": "Parallel ready stance",
+    "korean": "Narani Junbi Sogi",
+    "hangul": "나란히 준비 서기",
+    "pronunciation": "nah-rah-nee joon-bee soh-gee",
+    "belt": "White",
+    "category": "Stances"
+  },
+  {
+    "english": "Sitting ready stance",
+    "korean": "Annun Junbi Sogi",
+    "hangul": "앉는 준비 서기",
+    "pronunciation": "ahn-noon joon-bee soh-gee",
+    "belt": "Yellow Stripe",
+    "category": "Stances"
+  },
+  {
+    "english": "L-ready stance",
+    "korean": "Niunja Junbi Sogi",
+    "hangul": "니은자 준비 서기",
+    "pronunciation": "nee-oon-jah joon-bee soh-gee",
+    "belt": "Yellow Stripe",
+    "category": "Stances"
+  },
+  {
+    "english": "Close ready stance A",
+    "korean": "Moa Junbi Sogi A",
+    "hangul": "모아 준비 서기 A",
+    "pronunciation": "moh-ah joon-bee soh-gee A",
+    "belt": "Green",
+    "category": "Stances"
+  },
+  {
+    "english": "Bending stance",
+    "korean": "Guburyo Sogi",
+    "hangul": "구부려 서기",
+    "pronunciation": "goo-byuh-ryoh soh-gee",
+    "belt": "Green",
+    "category": "Stances"
+  },
+  {
+    "english": "Fixed ready stance",
+    "korean": "Gojung Junbi Sogi",
+    "hangul": "고정 준비 서기",
+    "pronunciation": "goh-joong joon-bee soh-gee",
+    "belt": "Green",
+    "category": "Stances"
+  },
+  {
+    "english": "X-stance",
+    "korean": "Kyocha Sogi",
+    "hangul": "교차 서기",
+    "pronunciation": "kyoh-cha soh-gee",
+    "belt": "Blue Stripe",
+    "category": "Stances"
+  },
+  {
+    "english": "Close ready stance B",
+    "korean": "Moa Junbi Sogi B",
+    "hangul": "모아 준비 서기 B",
+    "pronunciation": "moh-ah joon-bee soh-gee B",
+    "belt": "Blue",
+    "category": "Stances"
+  },
+  {
+    "english": "Rear foot stance",
+    "korean": "Dwitbal Sogi",
+    "hangul": "뒷발 서기",
+    "pronunciation": "dwit-bal soh-gee",
+    "belt": "Blue",
+    "category": "Stances"
+  },
+  {
+    "english": "Low ready stance",
+    "korean": "Nachuo Junbi Sogi",
+    "hangul": "낮춰 준비 서기",
+    "pronunciation": "nah-choo-oh joon-bee soh-gee",
+    "belt": "Blue",
+    "category": "Stances"
+  },
+  {
+    "english": "Vertical stance",
+    "korean": "Sewo Sogi",
+    "hangul": "세워 서기",
+    "pronunciation": "seh-woh soh-gee",
+    "belt": "Red Belt",
+    "category": "Stances"
+  },
+  {
+    "english": "Close ready stance C",
+    "korean": "Moa Junbi Sogi C",
+    "hangul": "모아 준비 서기 C",
+    "pronunciation": "moh-ah joon-bee soh-gee C",
+    "belt": "Red Belt",
+    "category": "Stances"
+  },
+  {
+    "english": "Forearm low block",
+    "korean": "Palmok Najunde Makgi",
+    "hangul": "팔목 낮은데 막기",
+    "pronunciation": "pahl-mok nah-joon-day mahk-gee",
+    "belt": "White",
+    "category": "Blocks"
+  },
+  {
+    "english": "Knifehand low block",
+    "korean": "Sonkal Najunde Makgi",
+    "hangul": "손칼 낮은데 막기",
+    "pronunciation": "son-kahl nah-joon-day mahk-gee",
+    "belt": "White",
+    "category": "Blocks"
+  },
+  {
+    "english": "Inner forearm block",
+    "korean": "An Palmok Makgi",
+    "hangul": "안팔목 막기",
+    "pronunciation": "ahn pahl-mok mahk-gee",
+    "belt": "White",
+    "category": "Blocks"
+  },
+  {
+    "english": "Forearm guarding block",
+    "korean": "Palmok Daebi Makgi",
+    "hangul": "팔목 대비 막기",
+    "pronunciation": "pahl-mok day-bee mahk-gee",
+    "belt": "Yellow Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Knifehand guarding block",
+    "korean": "Sonkal Daebi Makgi",
+    "hangul": "손칼 대비 막기",
+    "pronunciation": "son-kahl day-bee mahk-gee",
+    "belt": "Yellow",
+    "category": "Blocks"
+  },
+  {
+    "english": "Twin forearm block",
+    "korean": "Sang Palmok Makgi",
+    "hangul": "쌍팔목 막기",
+    "pronunciation": "sang pahl-mok mahk-gee",
+    "belt": "Yellow",
+    "category": "Blocks"
+  },
+  {
+    "english": "Forearm rising block",
+    "korean": "Palmok Chookyo Makgi",
+    "hangul": "팔목 추켜 막기",
+    "pronunciation": "pahl-mok choo-kyo mahk-gee",
+    "belt": "Yellow",
+    "category": "Blocks"
+  },
+  {
+    "english": "Outer forearm block",
+    "korean": "Pakat Palmok Makgi",
+    "hangul": "바깥팔목 막기",
+    "pronunciation": "pah-kaht pahl-mok mahk-gee",
+    "belt": "Green Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Wedging block",
+    "korean": "Hechyo Makgi",
+    "hangul": "헤쳐 막기",
+    "pronunciation": "heh-chyo mahk-gee",
+    "belt": "Green Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Inner forearm circular block",
+    "korean": "An Palmok Dollimyo Makgi",
+    "hangul": "안팔목 돌리며 막기",
+    "pronunciation": "ahn pahl-mok dol-lee-myoh mahk-gee",
+    "belt": "Green",
+    "category": "Blocks"
+  },
+  {
+    "english": "Palm hooking block",
+    "korean": "Sonbadak Golcho Makgi",
+    "hangul": "손바닥 걸쳐 막기",
+    "pronunciation": "son-bah-dak gol-cho mahk-gee",
+    "belt": "Blue Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Twin knifehand block",
+    "korean": "Sang Sonkal Makgi",
+    "hangul": "쌍손칼 막기",
+    "pronunciation": "sang son-kahl mahk-gee",
+    "belt": "Blue Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Double forearm block",
+    "korean": "Doo Palmok Makgi",
+    "hangul": "두팔목 막기",
+    "pronunciation": "doo pahl-mok mahk-gee",
+    "belt": "Blue Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Reverse knifehand block",
+    "korean": "Sonkal Dung Makgi",
+    "hangul": "손칼등 막기",
+    "pronunciation": "son-kahl doong mahk-gee",
+    "belt": "Blue",
+    "category": "Blocks"
+  },
+  {
+    "english": "Palm upward block",
+    "korean": "Sonbadak Ollyo Makgi",
+    "hangul": "손바닥 올려 막기",
+    "pronunciation": "son-bah-dak ol-lyoh mahk-gee",
+    "belt": "Blue",
+    "category": "Blocks"
+  },
+  {
+    "english": "X-fist rising block",
+    "korean": "Kyocha Joomuk Chookyo Makgi",
+    "hangul": "교차주먹 추켜 막기",
+    "pronunciation": "kyo-cha joo-mook choo-kyo mahk-gee",
+    "belt": "Blue",
+    "category": "Blocks"
+  },
+  {
+    "english": "Palm pressing block",
+    "korean": "Sonbadak Noollo Makgi",
+    "hangul": "손바닥 눌러 막기",
+    "pronunciation": "son-bah-dak nool-lo mahk-gee",
+    "belt": "Blue",
+    "category": "Blocks"
+  },
+  {
+    "english": "U-shape block",
+    "korean": "Digutja Makgi",
+    "hangul": "ㄷ자 막기",
+    "pronunciation": "dee-goot-ja mahk-gee",
+    "belt": "Blue",
+    "category": "Blocks"
+  },
+  {
+    "english": "X-fist pressing block",
+    "korean": "Kyocha Joomuk Noollo Makgi",
+    "hangul": "교차주먹 눌러 막기",
+    "pronunciation": "kyo-cha joo-mook nool-lo mahk-gee",
+    "belt": "Red Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "W-shape block",
+    "korean": "San Makgi",
+    "hangul": "산 막기",
+    "pronunciation": "sahn mahk-gee",
+    "belt": "Red Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Double forearm low pushing block",
+    "korean": "Doo Palmok Najunde Miro Makgi",
+    "hangul": "두팔목 낮은데 밀어 막기",
+    "pronunciation": "doo pahl-mok nah-joon-day mee-ro mahk-gee",
+    "belt": "Red Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Knifehand low guarding block",
+    "korean": "Sonkal Najunde Daebi Makgi",
+    "hangul": "손칼 낮은데 대비 막기",
+    "pronunciation": "son-kahl nah-joon-day day-bee mahk-gee",
+    "belt": "Red Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Palm pushing block",
+    "korean": "Sonbadak Miro Makgi",
+    "hangul": "손바닥 밀어 막기",
+    "pronunciation": "son-bah-dak mee-ro mahk-gee",
+    "belt": "Red Belt",
+    "category": "Blocks"
+  },
+  {
+    "english": "Side front block",
+    "korean": "Yobap Makgi",
+    "hangul": "옆앞 막기",
+    "pronunciation": "yob-ahp mahk-gee",
+    "belt": "Red Belt",
+    "category": "Blocks"
+  },
+  {
+    "english": "X-knifehand checking block",
+    "korean": "Kyocha Sonkal Momchau Makgi",
+    "hangul": "교차 손칼 멈춰 막기",
+    "pronunciation": "kyo-cha son-kahl mom-chow mahk-gee",
+    "belt": "Black Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Twin palm upward block",
+    "korean": "Sang Sonbadak Ollyo Makgi",
+    "hangul": "쌍 손바닥 올려 막기",
+    "pronunciation": "sang son-bah-dak ol-lyoh mahk-gee",
+    "belt": "Black Stripe",
+    "category": "Blocks"
+  },
+  {
+    "english": "Forefist punch",
+    "korean": "Ap Joomuk Jirugi",
+    "hangul": "앞주먹 지르기",
+    "pronunciation": "ahp joo-mook jee-roo-gee",
+    "belt": "White",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Reverse punch",
+    "korean": "Bandae Jirugi",
+    "hangul": "반대 지르기",
+    "pronunciation": "bahn-day jee-roo-gee",
+    "belt": "Green Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Straight fingertip thrust",
+    "korean": "Sun Sonkut Tulgi",
+    "hangul": "선 손끝 뚫기",
+    "pronunciation": "soon son-koot tool-gee",
+    "belt": "Green Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Knifehand side strike",
+    "korean": "Sonkal Yop Taerigi",
+    "hangul": "손칼 옆 때리기",
+    "pronunciation": "son-kahl yop tay-ree-gee",
+    "belt": "Yellow",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Knifehand inward strike",
+    "korean": "Sonkal Anuro Taerigi",
+    "hangul": "손칼 안으로 때리기",
+    "pronunciation": "son-kahl ah-noo-roh tay-ree-gee",
+    "belt": "Green",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Back fist side strike",
+    "korean": "Dung Joomuk Taerigi",
+    "hangul": "등주먹 때리기",
+    "pronunciation": "doong joo-mook tay-ree-gee",
+    "belt": "Green Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Front elbow strike",
+    "korean": "Ap Palkup Taerigi",
+    "hangul": "앞 팔굽 때리기",
+    "pronunciation": "ahp pahl-koob tay-ree-gee",
+    "belt": "Blue Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Twin fist vertical punch",
+    "korean": "Sang Joomuk Sewo Jirugi",
+    "hangul": "쌍주먹 세워 지르기",
+    "pronunciation": "sang joo-mook seh-woh jee-roo-gee",
+    "belt": "Blue",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Twin fist upset punch",
+    "korean": "Ssang Joomuk Dwijibo Jirugi",
+    "hangul": "쌍주먹 뒤집어 지르기",
+    "pronunciation": "ssang joo-mook dwee-jee-boh jee-roo-gee",
+    "belt": "Blue",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Upper elbow strike",
+    "korean": "Wi Palkup Taerigi",
+    "hangul": "위 팔굽 때리기",
+    "pronunciation": "wee pahl-koob tay-ree-gee",
+    "belt": "Blue",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Upset fingertip thrust",
+    "korean": "Dwijibun Sonkut Tulgi",
+    "hangul": "뒤집은 손끝 뚫기",
+    "pronunciation": "dwee-jee-boon son-koot tool-gee",
+    "belt": "Red Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Back fist side-back strike",
+    "korean": "Dung Joomuk Yopdwi Taerigi",
+    "hangul": "등주먹 옆뒤 때리기",
+    "pronunciation": "doong joo-mook yop-dwee tay-ree-gee",
+    "belt": "Red Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Twin side elbow thrust",
+    "korean": "Sang Yop Palkup Tulgi",
+    "hangul": "쌍 옆 팔굽 뚫기",
+    "pronunciation": "sang yop pahl-koob tool-gee",
+    "belt": "Red Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Uppercut punch",
+    "korean": "Ollyo Jirugi",
+    "hangul": "올려 지르기",
+    "pronunciation": "ol-lyoh jee-roo-gee",
+    "belt": "Red Belt",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Knifehand downward strike",
+    "korean": "Sonkal Naeryo Taerigi",
+    "hangul": "손칼 내려 때리기",
+    "pronunciation": "son-kahl nay-ryoh tay-ree-gee",
+    "belt": "Red Belt",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Knifehand high front strike",
+    "korean": "Sonkal Nopunde Ap Taerigi",
+    "hangul": "손칼 높은데 앞 때리기",
+    "pronunciation": "son-kahl noh-poon-day ahp tay-ree-gee",
+    "belt": "Black Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Reverse knifehand high front strike",
+    "korean": "Sonkal Dung Nopunde Ap Taerigi",
+    "hangul": "손칼등 높은데 앞 때리기",
+    "pronunciation": "son-kahl doong noh-poon-day ahp tay-ree-gee",
+    "belt": "Black Stripe",
+    "category": "Punches & Strikes"
+  },
+  {
+    "english": "Front snap kick",
+    "korean": "Ap Cha Busigi",
+    "hangul": "앞 차 부수기",
+    "pronunciation": "ahp chah boo-see-gee",
+    "belt": "White",
+    "category": "Kicks"
+  },
+  {
+    "english": "Front rising kick",
+    "korean": "Ap Cha Olligi",
+    "hangul": "앞차 올리기",
+    "pronunciation": "ahp chah ol-lee-gee",
+    "belt": "White",
+    "category": "Kicks"
+  },
+  {
+    "english": "Turning kick",
+    "korean": "Dollyo Chagi",
+    "hangul": "돌려 차기",
+    "pronunciation": "dol-lyoh chah-gee",
+    "belt": "Yellow Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Side turning kick",
+    "korean": "Yop Dollyo Chagi",
+    "hangul": "옆 돌려 차기",
+    "pronunciation": "yop dol-lyoh chah-gee",
+    "belt": "Yellow Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Side piercing kick",
+    "korean": "Yopcha Jirugi",
+    "hangul": "옆차 지르기",
+    "pronunciation": "yop-chah jee-roo-gee",
+    "belt": "Yellow",
+    "category": "Kicks"
+  },
+  {
+    "english": "Side rising kick",
+    "korean": "Yopcha Olligi",
+    "hangul": "옆차 올리기",
+    "pronunciation": "yop-chah ol-lee-gee",
+    "belt": "Yellow",
+    "category": "Kicks"
+  },
+  {
+    "english": "Side front snap kick",
+    "korean": "Yobap Cha Busigi",
+    "hangul": "옆앞 차 부수기",
+    "pronunciation": "yob-ahp chah boo-see-gee",
+    "belt": "Yellow",
+    "category": "Kicks"
+  },
+  {
+    "english": "Back piercing kick",
+    "korean": "Dwitcha Jirugi",
+    "hangul": "뒤차 지르기",
+    "pronunciation": "dwee-chah jee-roo-gee",
+    "belt": "Green Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Turning side kick",
+    "korean": "Dora Yop Chagi",
+    "hangul": "돌아 옆차기",
+    "pronunciation": "doh-rah yop chah-gee",
+    "belt": "Green Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Reverse turning kick",
+    "korean": "Bandae Dollyo Chagi",
+    "hangul": "반대 돌려 차기",
+    "pronunciation": "bahn-day dol-lyoh chah-gee",
+    "belt": "Green Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Reverse hooking kick",
+    "korean": "Bandae Dollyo Goro Chagi",
+    "hangul": "반대 돌려 걸어 차기",
+    "pronunciation": "bahn-day dol-lyoh go-roh chah-gee",
+    "belt": "Green Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Vertical kick",
+    "korean": "Sewo Chagi",
+    "hangul": "세워 차기",
+    "pronunciation": "seh-woh chah-gee",
+    "belt": "Green",
+    "category": "Kicks"
+  },
+  {
+    "english": "Inward vertical kick",
+    "korean": "Anuro Sewo Chagi",
+    "hangul": "안으로 세워 차기",
+    "pronunciation": "ah-noo-roh seh-woh chah-gee",
+    "belt": "Green",
+    "category": "Kicks"
+  },
+  {
+    "english": "Outward vertical kick",
+    "korean": "Bakuro Sewo Chagi",
+    "hangul": "밖으로 세워 차기",
+    "pronunciation": "bah-koo-roh seh-woh chah-gee",
+    "belt": "Green",
+    "category": "Kicks"
+  },
+  {
+    "english": "Crescent kick",
+    "korean": "Bandal Chagi",
+    "hangul": "반달 차기",
+    "pronunciation": "bahn-dahl chah-gee",
+    "belt": "Green",
+    "category": "Kicks"
+  },
+  {
+    "english": "Hooking kick",
+    "korean": "Golcho Chagi",
+    "hangul": "걸쳐 차기",
+    "pronunciation": "gol-choh chah-gee",
+    "belt": "Green",
+    "category": "Kicks"
+  },
+  {
+    "english": "Downward kick",
+    "korean": "Naeryo Chagi",
+    "hangul": "내려 차기",
+    "pronunciation": "nay-ryoh chah-gee",
+    "belt": "Blue Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Pick-shape kick",
+    "korean": "Gokaengi Chagi",
+    "hangul": "곡괭이 차기",
+    "pronunciation": "goh-kaeng-ee chah-gee",
+    "belt": "Blue Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Twisting kick",
+    "korean": "Bituro Chagi",
+    "hangul": "비틀어 차기",
+    "pronunciation": "bee-too-roh chah-gee",
+    "belt": "Blue Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying front snap kick",
+    "korean": "Twimyo Ap Cha Busigi",
+    "hangul": "뛰며 앞 차 부수기",
+    "pronunciation": "twee-myoh ahp chah boo-see-gee",
+    "belt": "Blue",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying turning kick",
+    "korean": "Twimyo Dollyo Chagi",
+    "hangul": "뛰며 돌려 차기",
+    "pronunciation": "twee-myoh dol-lyoh chah-gee",
+    "belt": "Blue",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying side piercing kick",
+    "korean": "Twimyo Yopcha Jirugi",
+    "hangul": "뛰며 옆차 지르기",
+    "pronunciation": "twee-myoh yop-chah jee-roo-gee",
+    "belt": "Blue",
+    "category": "Kicks"
+  },
+  {
+    "english": "Upward kick",
+    "korean": "Ollyo Chagi",
+    "hangul": "올려 차기",
+    "pronunciation": "ol-lyoh chah-gee",
+    "belt": "Red Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying back piercing kick",
+    "korean": "Twimyo Dwitcha Jirugi",
+    "hangul": "뛰며 뒤차 지르기",
+    "pronunciation": "twee-myoh dwee-chah jee-roo-gee",
+    "belt": "Red Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying twisting kick",
+    "korean": "Twimyo Bituro Chagi",
+    "hangul": "뛰며 비틀어 차기",
+    "pronunciation": "twee-myoh bee-too-roh chah-gee",
+    "belt": "Red Belt",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying reverse turning kick",
+    "korean": "Twimyo Bandae Dollyo Chagi",
+    "hangul": "뛰며 반대 돌려 차기",
+    "pronunciation": "twee-myoh bahn-day dol-lyoh chah-gee",
+    "belt": "Red Belt",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying reverse hooking kick",
+    "korean": "Twimyo Bandae Dollyo Goro Chagi",
+    "hangul": "뛰며 반대 돌려 걸어 차기",
+    "pronunciation": "twee-myoh bahn-day dol-lyoh go-roh chah-gee",
+    "belt": "Red Belt",
+    "category": "Kicks"
+  },
+  {
+    "english": "Flying downward kick",
+    "korean": "Twimyo Naeryo Chagi",
+    "hangul": "뛰며 내려 차기",
+    "pronunciation": "twee-myoh nay-ryoh chah-gee",
+    "belt": "Black Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Mid-air kick",
+    "korean": "Twio Nomo Chagi",
+    "hangul": "",
+    "pronunciation": "twee-oh noh-moh chah-gee",
+    "belt": "Black Stripe",
+    "category": "Kicks"
+  },
+  {
+    "english": "Two-direction kick",
+    "korean": "Ibang Hyang Chagi",
+    "hangul": "",
+    "pronunciation": "ee-bang hyang chah-gee",
+    "belt": "Black Stripe",
+    "category": "Kicks"
+  }
+];
+
+const BELT_ORDER = ["White","Yellow Stripe","Yellow","Green Stripe","Green","Blue Stripe","Blue","Red Stripe","Red Belt","Black Stripe"];
+let current = null;
+
+function id(x) { return document.getElementById(x); }
+
+function unique(arr, key) {
+  return ["All", ...Array.from(new Set(arr.map(x => x[key]).filter(Boolean)))];
+}
+
+function fillSelect(el, values) {
+  el.innerHTML = "";
+  values.forEach(v => {
+    const o = document.createElement("option");
+    o.value = v;
+    o.textContent = v;
+    el.appendChild(o);
+  });
+}
+
+function updateControls() {
+  const type = id("practiceType").value;
+  id("beltBox").style.display = type === "techniques" ? "block" : "none";
+  id("scopeBox").style.display = type === "techniques" ? "block" : "none";
+
+  const data = type === "common" ? COMMON_TERMS : TECHNIQUES;
+  fillSelect(id("category"), unique(data, "category"));
+}
+
+function allowedCards() {
+  const type = id("practiceType").value;
+  const cat = id("category").value;
+
+  let data = type === "common" ? COMMON_TERMS : TECHNIQUES;
+
+  if (cat !== "All") {
+    data = data.filter(x => x.category === cat);
+  }
+
+  if (type === "techniques") {
+    const belt = id("belt").value;
+    const scope = id("scope").value;
+    const beltIndex = BELT_ORDER.indexOf(belt);
+
+    data = data.filter(x => {
+      const itemIndex = BELT_ORDER.indexOf(x.belt);
+      if (scope === "only") return x.belt === belt;
+      return itemIndex >= 0 && itemIndex <= beltIndex;
+    });
+  }
+
+  return data;
+}
+
+function nextCard() {
+  const list = allowedCards();
+  id("answer").innerHTML = "";
+  if (!list.length) {
+    current = null;
+    id("question").textContent = "No cards for this selection";
+    id("meta").textContent = "";
+    return;
+  }
+  current = list[Math.floor(Math.random() * list.length)];
+  const dir = id("direction").value;
+  id("question").textContent = dir === "ko2en" ? current.korean : current.english;
+  id("meta").textContent =
+    id("practiceType").value === "common"
+      ? (current.category || "Common term")
+      : `${current.belt} • ${current.category}`;
+}
+
+function showAnswer() {
+  if (!current) nextCard();
+  if (!current) return;
+  const dir = id("direction").value;
+  const main = dir === "ko2en" ? current.english : current.korean;
+  let details = `<b>${main}</b>`;
+  if (current.hangul) details += `<br><span style="color:white">${current.hangul}</span>`;
+  if (current.belt) details += `<br><span style="color:#aab4c4">${current.belt}</span>`;
+  id("answer").innerHTML = details;
+}
+
+function playAudio() {
+  if (!current || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const text = current.hangul || current.korean;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = current.hangul ? "ko-KR" : "en-US";
+  u.rate = 0.75;
+  speechSynthesis.speak(u);
+}
+
+function init() {
+  fillSelect(id("belt"), BELT_ORDER);
+  updateControls();
+  nextCard();
+}
+init();
+</script>
+</body>
+</html>
