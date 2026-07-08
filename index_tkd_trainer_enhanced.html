@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TKD Trainer</title>
+<style>
+body{font-family:-apple-system,Arial;background:#101722;color:#fff;max-width:900px;margin:auto;padding:16px}
+.card{background:#1c2433;border-radius:18px;padding:16px;margin:12px 0}
+button,select{font-size:17px;padding:12px;border-radius:12px;margin:6px;width:100%}
+button{background:#ffd34d;color:#111;font-weight:bold;border:0}
+#q{font-size:42px;font-weight:bold;margin:20px 0}#a{font-size:26px;color:#ffd34d}
+.progress{height:10px;background:#333;border-radius:10px}.bar{height:10px;background:#ffd34d;width:0%;border-radius:10px}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#355;margin:2px}
+</style></head>
+<body>
+<h1>🥋 ITF TKD Trainer</h1>
+<div class="card">
+<label>Practice</label>
+<select id="type"><option value="common">Common Terms</option><option value="tech">Techniques</option></select>
+<label>Learning Mode</label>
+<select id="mode">
+<option value="random">🎲 Random</option>
+<option value="study">📚 Study</option>
+<option value="wrong">❌ Wrong answers only</option>
+</select>
+<label>Direction</label>
+<select id="dir"><option value="ko">Korean → English</option><option value="en">English → Korean</option></select>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div id="prog">0/0</div>
+</div>
+
+<div class="card">
+<div id="meta"></div>
+<div id="q">Press Start</div>
+<div id="a"></div>
+<button onclick="nextCard()">Start / Next</button>
+<button onclick="showAnswer()">Show Answer</button>
+<button onclick="audio()">🔊 Audio</button>
+<div style="display:flex;gap:8px">
+<button onclick="grade(true)">✔ Correct</button>
+<button onclick="grade(false)">✘ Incorrect</button>
+</div>
+</div>
+
+<script>
+const BELTS=["White","Yellow Stripe","Yellow","Green Stripe","Green","Blue Stripe","Blue","Red Stripe","Red Belt","Black Stripe"];
+let common=[],tech=[],deck=[],wrong=[],current=null,seen=0,right=0,mode="random",study=0;
+async function load(){common=await fetch("common_terms.json").then(r=>r.json());tech=await fetch("techniques.json").then(r=>r.json());build();}
+function build(){mode=document.getElementById("mode").value;deck=(document.getElementById("type").value=="common")?common:tech;if(mode=="wrong")deck=[...wrong];study=0;nextCard();}
+document.getElementById("mode").onchange=build;document.getElementById("type").onchange=build;
+function nextCard(){if(deck.length==0){q.textContent="No cards";return;}a.innerHTML="";current=(mode=="study")?deck[(study++)%deck.length]:deck[Math.floor(Math.random()*deck.length)];
+let ko=document.getElementById("dir").value=="ko";q.textContent=ko?current.korean:current.english;meta.innerHTML="<span class='badge'>"+(current.belt||"Common")+"</span><span class='badge'>"+(current.category||"")+"</span>";prog.textContent=(seen+1)+"/"+deck.length;bar.style.width=((seen+1)/deck.length*100)+"%";}
+function showAnswer(){let ko=document.getElementById("dir").value=="ko";a.innerHTML="<b>"+(ko?current.english:current.korean)+"</b><br>"+(current.hangul||"");}
+function grade(ok){seen++;if(ok)right++;else if(!wrong.find(x=>x.english==current.english))wrong.push(current);if(mode=="wrong")deck=[...wrong];nextCard();}
+function audio(){if(!current)return;let u=new SpeechSynthesisUtterance(current.hangul||current.korean);u.lang=current.hangul?"ko-KR":"en-US";speechSynthesis.speak(u);}
+load();
+</script></body></html>
