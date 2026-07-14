@@ -1,0 +1,498 @@
+[
+  {
+    "english": "Front",
+    "korean": "Ap",
+    "hangul": "앞",
+    "pronunciation": "ahp",
+    "category": "Directions"
+  },
+  {
+    "english": "Back",
+    "korean": "Dwi",
+    "hangul": "뒤",
+    "pronunciation": "dwee",
+    "category": "Directions"
+  },
+  {
+    "english": "Rear",
+    "korean": "Dwit",
+    "hangul": "뒷",
+    "pronunciation": "dwit",
+    "category": "Directions"
+  },
+  {
+    "english": "Side",
+    "korean": "Yop",
+    "hangul": "옆",
+    "pronunciation": "yop",
+    "category": "Directions"
+  },
+  {
+    "english": "Inward",
+    "korean": "Anuro",
+    "hangul": "안으로",
+    "pronunciation": "ah-noo-roh",
+    "category": "Directions"
+  },
+  {
+    "english": "Outward",
+    "korean": "Bakuro",
+    "hangul": "밖으로",
+    "pronunciation": "bah-koo-roh",
+    "category": "Directions"
+  },
+  {
+    "english": "Reverse / Opposite",
+    "korean": "Bandae",
+    "hangul": "반대",
+    "pronunciation": "ban-dae",
+    "category": "Directions"
+  },
+  {
+    "english": "Turning",
+    "korean": "Dollyo",
+    "hangul": "돌려",
+    "pronunciation": "dol-lyoh",
+    "category": "Directions"
+  },
+  {
+    "english": "Circular",
+    "korean": "Dollimyo",
+    "hangul": "돌리며",
+    "pronunciation": "dol-lee-myoh",
+    "category": "Directions"
+  },
+  {
+    "english": "Flying",
+    "korean": "Twimyo",
+    "hangul": "뛰며",
+    "pronunciation": "twee-myoh",
+    "category": "Directions"
+  },
+  {
+    "english": "Downward",
+    "korean": "Naeryo",
+    "hangul": "내려",
+    "pronunciation": "nay-ryoh",
+    "category": "Directions"
+  },
+  {
+    "english": "Upward",
+    "korean": "Ollyo",
+    "hangul": "올려",
+    "pronunciation": "ol-lyoh",
+    "category": "Directions"
+  },
+  {
+    "english": "Pressing",
+    "korean": "Noollo",
+    "hangul": "눌러",
+    "pronunciation": "nool-loh",
+    "category": "Directions"
+  },
+  {
+    "english": "Pushing",
+    "korean": "Miro",
+    "hangul": "밀어",
+    "pronunciation": "mee-roh",
+    "category": "Directions"
+  },
+  {
+    "english": "Hooking",
+    "korean": "Golcho",
+    "hangul": "걸쳐",
+    "pronunciation": "gol-choh",
+    "category": "Directions"
+  },
+  {
+    "english": "Twisting",
+    "korean": "Bituro",
+    "hangul": "비틀어",
+    "pronunciation": "bee-too-roh",
+    "category": "Directions"
+  },
+  {
+    "english": "Low",
+    "korean": "Najunde",
+    "hangul": "낮은데",
+    "pronunciation": "nah-joon-day",
+    "category": "Heights"
+  },
+  {
+    "english": "Middle",
+    "korean": "Kaunde",
+    "hangul": "가운데",
+    "pronunciation": "kah-oon-day",
+    "category": "Heights"
+  },
+  {
+    "english": "High",
+    "korean": "Nopunde",
+    "hangul": "높은데",
+    "pronunciation": "noh-poon-day",
+    "category": "Heights"
+  },
+  {
+    "english": "Forearm",
+    "korean": "Palmok",
+    "hangul": "팔목",
+    "pronunciation": "pahl-mok",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Inner forearm",
+    "korean": "An Palmok",
+    "hangul": "안팔목",
+    "pronunciation": "ahn pahl-mok",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Outer forearm",
+    "korean": "Pakat Palmok",
+    "hangul": "바깥팔목",
+    "pronunciation": "pah-kaht pahl-mok",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Fist",
+    "korean": "Joomuk",
+    "hangul": "주먹",
+    "pronunciation": "joo-mook",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Forefist",
+    "korean": "Ap Joomuk",
+    "hangul": "앞주먹",
+    "pronunciation": "ahp joo-mook",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Back fist",
+    "korean": "Dung Joomuk",
+    "hangul": "등주먹",
+    "pronunciation": "doong joo-mook",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Knifehand",
+    "korean": "Sonkal",
+    "hangul": "손칼",
+    "pronunciation": "son-kahl",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Reverse knifehand",
+    "korean": "Sonkal Dung",
+    "hangul": "손칼등",
+    "pronunciation": "son-kahl doong",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Palm",
+    "korean": "Sonbadak",
+    "hangul": "손바닥",
+    "pronunciation": "son-bah-dak",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Fingertip",
+    "korean": "Sonkut",
+    "hangul": "손끝",
+    "pronunciation": "son-koot",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Elbow",
+    "korean": "Palkup",
+    "hangul": "팔굽",
+    "pronunciation": "pahl-koob",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Foot",
+    "korean": "Bal",
+    "hangul": "발",
+    "pronunciation": "bahl",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Sole of foot",
+    "korean": "Balbadak",
+    "hangul": "발바닥",
+    "pronunciation": "bahl-bah-dak",
+    "category": "Body Parts"
+  },
+  {
+    "english": "Block",
+    "korean": "Makgi",
+    "hangul": "막기",
+    "pronunciation": "mahk-gee",
+    "category": "Actions"
+  },
+  {
+    "english": "Punch",
+    "korean": "Jirugi",
+    "hangul": "지르기",
+    "pronunciation": "jee-roo-gee",
+    "category": "Actions"
+  },
+  {
+    "english": "Strike",
+    "korean": "Taerigi",
+    "hangul": "때리기",
+    "pronunciation": "tay-ree-gee",
+    "category": "Actions"
+  },
+  {
+    "english": "Thrust",
+    "korean": "Tulgi",
+    "hangul": "뚫기",
+    "pronunciation": "tool-gee",
+    "category": "Actions"
+  },
+  {
+    "english": "Kick",
+    "korean": "Chagi",
+    "hangul": "차기",
+    "pronunciation": "chah-gee",
+    "category": "Actions"
+  },
+  {
+    "english": "Ready",
+    "korean": "Junbi",
+    "hangul": "준비",
+    "pronunciation": "joon-bee",
+    "category": "Commands"
+  },
+  {
+    "english": "Guarding",
+    "korean": "Daebi",
+    "hangul": "대비",
+    "pronunciation": "day-bee",
+    "category": "Actions"
+  },
+  {
+    "english": "Stance",
+    "korean": "Sogi",
+    "hangul": "서기",
+    "pronunciation": "soh-gee",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Ready stance",
+    "korean": "Junbi Sogi",
+    "hangul": "준비 서기",
+    "pronunciation": "joon-bee soh-gee",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Walking",
+    "korean": "Gunnun",
+    "hangul": "걷는",
+    "pronunciation": "goon-noon",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Sitting",
+    "korean": "Annun",
+    "hangul": "앉는",
+    "pronunciation": "ahn-noon",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Parallel",
+    "korean": "Narani",
+    "hangul": "나란히",
+    "pronunciation": "nah-rah-nee",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "L-shape",
+    "korean": "Niunja",
+    "hangul": "니은자",
+    "pronunciation": "nee-oon-jah",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Cross",
+    "korean": "Kyocha",
+    "hangul": "교차",
+    "pronunciation": "kyoh-cha",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Fixed",
+    "korean": "Gojung",
+    "hangul": "고정",
+    "pronunciation": "goh-joong",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Vertical",
+    "korean": "Sewo",
+    "hangul": "세워",
+    "pronunciation": "seh-woh",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Bending",
+    "korean": "Guburyo",
+    "hangul": "구부려",
+    "pronunciation": "goo-byuh-ryoh",
+    "category": "Stance Terms"
+  },
+  {
+    "english": "Attention",
+    "korean": "Charyot",
+    "hangul": "차렷",
+    "pronunciation": "chah-ryot",
+    "category": "Commands"
+  },
+  {
+    "english": "Bow",
+    "korean": "Kyong Ye",
+    "hangul": "경례",
+    "pronunciation": "kyung-ye",
+    "category": "Commands"
+  },
+  {
+    "english": "Ready",
+    "korean": "Junbi",
+    "hangul": "준비",
+    "pronunciation": "joon-bee",
+    "category": "Commands"
+  },
+  {
+    "english": "Begin",
+    "korean": "Shijak",
+    "hangul": "시작",
+    "pronunciation": "shee-jahk",
+    "category": "Commands"
+  },
+  {
+    "english": "Stop",
+    "korean": "Guman",
+    "hangul": "그만",
+    "pronunciation": "goo-mahn",
+    "category": "Commands"
+  },
+  {
+    "english": "Return",
+    "korean": "Baro",
+    "hangul": "바로",
+    "pronunciation": "bah-roh",
+    "category": "Commands"
+  },
+  {
+    "english": "At ease",
+    "korean": "Swiyo",
+    "hangul": "쉬어",
+    "pronunciation": "shwee-oh",
+    "category": "Commands"
+  },
+  {
+    "english": "Courtesy",
+    "korean": "Ye-ui",
+    "hangul": "예의",
+    "pronunciation": "yeh-wee",
+    "category": "Tenets",
+    "belt": "Blue"
+  },
+  {
+    "english": "Integrity",
+    "korean": "Yeom-chi",
+    "hangul": "염치",
+    "pronunciation": "yuhm-chee",
+    "category": "Tenets",
+    "belt": "Blue"
+  },
+  {
+    "english": "Perseverance",
+    "korean": "In-nae",
+    "hangul": "인내",
+    "pronunciation": "in-nay",
+    "category": "Tenets",
+    "belt": "Blue"
+  },
+  {
+    "english": "Self-control",
+    "korean": "Geuk-gi",
+    "hangul": "극기",
+    "pronunciation": "geuk-gee",
+    "category": "Tenets",
+    "belt": "Blue"
+  },
+  {
+    "english": "Indomitable spirit",
+    "korean": "Baekjeol Bulgul",
+    "hangul": "백절불굴",
+    "pronunciation": "baek-jeol bool-gool",
+    "category": "Tenets",
+    "belt": "Blue"
+  },
+  {
+    "english": "Theory of Power",
+    "korean": "Him Ui Wolli",
+    "hangul": "힘의 원리",
+    "pronunciation": "him oo-ee woll-ee",
+    "category": "Theory of Power",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Reaction Force",
+    "korean": "Bandong Ryok",
+    "hangul": "반동력",
+    "pronunciation": "ban-dong ryok",
+    "category": "Theory of Power",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Concentration",
+    "korean": "Jip Joong",
+    "hangul": "집중",
+    "pronunciation": "jip joong",
+    "category": "Theory of Power",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Equilibrium",
+    "korean": "Kyun Hyung",
+    "hangul": "균형",
+    "pronunciation": "kyoon hyung",
+    "category": "Theory of Power",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Breath Control",
+    "korean": "Hohup Jojul",
+    "hangul": "호흡 조절",
+    "pronunciation": "ho-hup jo-jool",
+    "category": "Theory of Power",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Mass",
+    "korean": "Jillyang",
+    "hangul": "질량",
+    "pronunciation": "jil-lyang",
+    "category": "Theory of Power",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Speed",
+    "korean": "Sokdo",
+    "hangul": "속도",
+    "pronunciation": "sok-doh",
+    "category": "Theory of Power",
+    "belt": "Red Stripe"
+  },
+  {
+    "english": "Training hall",
+    "korean": "Dojang",
+    "hangul": "도장",
+    "pronunciation": "doh-jahng",
+    "category": "General",
+    "belt": "Red Stripe"
+  }
+]
