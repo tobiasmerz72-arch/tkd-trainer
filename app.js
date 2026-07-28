@@ -92,7 +92,7 @@ function startPractice(){
 function updateTitle(){
   const type=$("practiceType").value;
   $("practiceTitle").textContent=type==="common"?"COMMON TERMS":type==="techniques"?"TECHNIQUES":"THEORY";
-  $("swipeHint").textContent=type==="theory"?"Swipe left to reveal · left again for next":"Swipe left for next · tap to reveal";
+  $("swipeHint").textContent="Tap to flip · swipe left for next · swipe right for previous";
 }
 function textSize(el,text,kind="term"){
   el.classList.remove("medium","small","xsmall","theory-question","theory-answer");
@@ -126,7 +126,8 @@ function fitTheoryText(el){
 }
 function showCard(){
   current=deck[deckIndex%deck.length];answerShown=false;
-  $("frontContent").classList.remove("hidden");$("backContent").classList.add("hidden");
+  $("flashcard").classList.remove("is-flipped");
+  $("flashcard").setAttribute("aria-label","Flash card. Tap to reveal the answer.");
   const type=$("practiceType").value;
   if(type==="theory"){
     $("question").textContent=current.question;
@@ -159,18 +160,27 @@ function animateCard(){
 function toggleAnswer(){
   if(!current)return;
   answerShown=!answerShown;
-  $("frontContent").classList.toggle("hidden",answerShown);
-  $("backContent").classList.toggle("hidden",!answerShown);
+  $("flashcard").classList.toggle("is-flipped",answerShown);
+  $("flashcard").setAttribute("aria-label",answerShown?"Answer shown. Tap to return to the question.":"Flash card. Tap to reveal the answer.");
   if($("practiceType").value==="theory"&&answerShown)fitTheoryText($("answerWord"));
   if($("practiceType").value!=="theory"){
     const koreanVisible=$("direction").value==="ko2en"||answerShown;
     $("audioButton").classList.toggle("hidden",!koreanVisible);
   }
 }
-function nextCard(){
-  const c=$("flashcard");c.classList.add("card-exit");
-  setTimeout(()=>{c.classList.remove("card-exit");deckIndex=(deckIndex+1)%deck.length;showCard()},150);
+function moveCard(direction){
+  if(!deck.length)return;
+  const c=$("flashcard");
+  const exitClass=direction>0?"card-exit-left":"card-exit-right";
+  c.classList.add(exitClass);
+  setTimeout(()=>{
+    c.classList.remove(exitClass);
+    deckIndex=(deckIndex+direction+deck.length)%deck.length;
+    showCard();
+  },190);
 }
+function nextCard(){moveCard(1)}
+function previousCard(){moveCard(-1)}
 function grade(correct){
   if(!current)return;
   const key=cardKey(current);
@@ -179,8 +189,9 @@ function grade(correct){
   updateStats();nextCard();
 }
 function updateProgress(){
-  $("progressCount").textContent=`${deckIndex+1} / ${deck.length}`;
-  $("progressBar").style.width=`${((deckIndex+1)/deck.length)*100}%`;
+  const percent=Math.round(((deckIndex+1)/deck.length)*100);
+  $("progressCount").textContent=`${deckIndex+1} / ${deck.length} · ${percent}%`;
+  $("progressBar").style.width=`${percent}%`;
   updateStats();
 }
 function updateStats(){$("stats").textContent=`${rightCount} right · ${wrongCount} wrong`}
@@ -199,24 +210,34 @@ document.querySelectorAll(".choice-row").forEach(b=>b.addEventListener("click",(
 ["belt","scope","category","mode"].forEach(id=>$(id).addEventListener("change",()=>{save();updateSummary()}));
 $("startButton").addEventListener("click",startPractice);
 $("backButton").addEventListener("click",backToSettings);$("settingsButton").addEventListener("click",backToSettings);
-$("flashcard").addEventListener("click",toggleAnswer);
+let suppressCardClick=false;
+$("flashcard").addEventListener("click",()=>{
+  if(suppressCardClick){suppressCardClick=false;return}
+  toggleAnswer();
+});
 $("wrongButton").addEventListener("click",()=>grade(false));$("rightButton").addEventListener("click",()=>grade(true));
 $("audioButton").addEventListener("click",e=>{e.stopPropagation();speak()});
 
 let touchX=0,touchY=0;
-$("flashcard").addEventListener("touchstart",e=>{touchX=e.changedTouches[0].screenX;touchY=e.changedTouches[0].screenY},{passive:true});
+$("flashcard").addEventListener("touchstart",e=>{
+  touchX=e.changedTouches[0].screenX;
+  touchY=e.changedTouches[0].screenY;
+  suppressCardClick=false;
+},{passive:true});
 $("flashcard").addEventListener("touchend",e=>{
   const dx=e.changedTouches[0].screenX-touchX,dy=e.changedTouches[0].screenY-touchY;
   if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy))return;
-  if(dx<0){
-    if($("practiceType").value==="theory"&&!answerShown)toggleAnswer();else nextCard();
-  }else toggleAnswer();
+  suppressCardClick=true;
+  if(dx<0)nextCard();else previousCard();
 },{passive:true});
 document.addEventListener("keydown",e=>{
   if($("practiceScreen").classList.contains("hidden"))return;
-  if(e.key==="Enter")toggleAnswer();
-  if(e.key==="ArrowRight"||e.key===" "){e.preventDefault();if($("practiceType").value==="theory"&&!answerShown)toggleAnswer();else nextCard()}
-  if(e.key==="ArrowUp")grade(true);if(e.key==="ArrowDown")grade(false);if(e.key==="Escape")backToSettings();
+  if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleAnswer()}
+  if(e.key==="ArrowRight"){e.preventDefault();nextCard()}
+  if(e.key==="ArrowLeft"){e.preventDefault();previousCard()}
+  if(e.key==="ArrowUp")grade(true);
+  if(e.key==="ArrowDown")grade(false);
+  if(e.key==="Escape")backToSettings();
 });
 if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
 load();

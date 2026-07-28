@@ -92,7 +92,7 @@
 
         <div id="deckSummary" class="deck-summary">Loading cards…</div>
         <button id="startButton" class="start-button" type="button">START PRACTICE <span>→</span></button>
-        <div class="version">Tobi's Taekwon-Do Academy · v4.3</div>
+        <div class="version">Tobi's Taekwon-Do Academy · v4.4</div>
       </section>
     </section>
 
@@ -107,15 +107,17 @@
       <div class="progress-count" id="progressCount">0 / 0</div>
       <div id="beltBadge" class="belt-badge hidden"></div>
 
-      <article id="flashcard" class="flashcard" tabindex="0">
-        <div id="frontContent" class="card-face">
-          <div id="question" class="question">Loading…</div>
-          <div id="hangul" class="hangul"></div>
-        </div>
-        <div id="backContent" class="card-face hidden">
-          <div class="answer-label">ANSWER</div>
-          <div id="answerWord" class="answer-word"></div>
-          <div id="answerDetails" class="answer-details"></div>
+      <article id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Flash card. Tap to reveal the answer.">
+        <div class="card-inner">
+          <div id="frontContent" class="card-face card-front">
+            <div id="question" class="question">Loading…</div>
+            <div id="hangul" class="hangul"></div>
+          </div>
+          <div id="backContent" class="card-face card-back">
+            <div class="answer-label">ANSWER</div>
+            <div id="answerWord" class="answer-word"></div>
+            <div id="answerDetails" class="answer-details"></div>
+          </div>
         </div>
       </article>
 
