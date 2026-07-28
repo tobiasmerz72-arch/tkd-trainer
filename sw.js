@@ -1,10 +1,11 @@
-const CACHE_NAME = "tobis-tkd-trainer-v2-20260728";
+const CACHE_NAME = "tobis-tkd-trainer-v3-theory-20260728";
 
 const FILES = [
   "./",
   "./index.html",
   "./common_terms.json",
   "./techniques.json",
+  "./theory.json",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
