@@ -1,794 +1,133 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tobi's ITF TKD Trainer</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#070a10">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tobi's TKD Trainer">
-<style>
-:root{
-  --bg:#070a10;
-  --panel:#111827;
-  --panel2:#1b2638;
-  --line:#314057;
-  --text:#f7f9fc;
-  --muted:#9eabc0;
-  --gold:#ffd34d;
-  --orange:#ff9d2e;
-  --green:#39d98a;
-  --red:#ff6b7a;
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  background:radial-gradient(circle at top left,#243a5d 0,#111827 38%,#070a10 100%);
-  padding:max(env(safe-area-inset-top),8px) 12px max(env(safe-area-inset-bottom),8px);
-}
-button,select{font:inherit}
-button{touch-action:manipulation}
-.hidden{display:none!important}
-.app{max-width:900px;margin:auto;min-height:100vh}
-
-.top{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
-.logo{
-  width:50px;height:50px;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;background:linear-gradient(145deg,var(--gold),var(--orange));
-  box-shadow:0 10px 26px rgba(0,0,0,.35)
-}
-h1{margin:0;font-size:25px;letter-spacing:-.045em}
-.subtitle{font-size:13px;color:var(--muted);margin-top:2px}
-
-.panel{
-  background:linear-gradient(180deg,rgba(27,38,56,.97),rgba(17,25,38,.99));
-  border:1px solid var(--line);border-radius:24px;padding:16px;
-  box-shadow:0 14px 42px rgba(0,0,0,.34)
-}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-label{
-  display:block;margin:7px 0 5px;font-size:11px;color:var(--muted);
-  text-transform:uppercase;font-weight:900;letter-spacing:.06em
-}
-select{
-  width:100%;appearance:none;background:var(--panel2);color:var(--text);
-  border:1px solid var(--line);border-radius:14px;padding:12px 11px;
-  font-size:16px;outline:none
-}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
-.tab{
-  padding:11px 5px;border-radius:14px;background:#121c2d;
-  border:1px solid var(--line);color:var(--muted);
-  font-weight:900;text-align:center;font-size:13px;user-select:none
-}
-.tab.active{
-  background:linear-gradient(145deg,var(--gold),var(--orange));
-  color:#141414;border-color:transparent
-}
-.startButton{
-  width:100%;margin-top:14px;padding:16px 12px;border:0;border-radius:17px;
-  font-size:18px;font-weight:950;color:#141414;
-  background:linear-gradient(145deg,var(--gold),var(--orange));
-  box-shadow:0 8px 22px rgba(0,0,0,.26)
-}
-.deckSummary{text-align:center;color:var(--muted);font-size:13px;margin-top:10px}
-
-#practicePage{
-  min-height:calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);
-  display:flex;flex-direction:column
-}
-.practiceHeader{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:10px;padding:2px 1px 9px
-}
-.backButton,.audioButton,.actionButton{
-  border:0;border-radius:15px;color:var(--text);font-weight:900
-}
-.backButton{padding:10px 13px;background:#24324b;border:1px solid #3a4b68}
-.practiceInfo{text-align:center;min-width:0;flex:1}
-.practiceInfo b{
-  display:block;font-size:13px;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis
-}
-.practiceInfo span{font-size:11px;color:var(--muted)}
-.progressOuter{
-  height:7px;background:#0b111b;border-radius:999px;
-  border:1px solid #273247;overflow:hidden;margin-bottom:10px
-}
-.progressInner{
-  height:100%;width:0;
-  background:linear-gradient(90deg,var(--gold),var(--orange));
-  transition:width .25s ease
-}
-.pageStage{
-  position:relative;flex:1;min-height:430px;perspective:1300px;
-  touch-action:pan-y
-}
-.page{
-  position:absolute;inset:0;overflow:hidden;
-  display:flex;flex-direction:column;
-  background:linear-gradient(180deg,rgba(27,38,56,.99),rgba(12,18,29,1));
-  border:1px solid var(--line);border-radius:25px;
-  box-shadow:0 18px 52px rgba(0,0,0,.40);
-  transform-origin:left center;
-  backface-visibility:hidden;-webkit-backface-visibility:hidden
-}
-.page.turnOut{animation:turnOut .30s ease forwards}
-.page.turnIn{animation:turnIn .30s ease forwards}
-.page.wrongShake{animation:wrongShake .28s ease}
-@keyframes turnOut{
-  0%{transform:rotateY(0deg);opacity:1}
-  100%{transform:rotateY(-88deg);opacity:.15}
-}
-@keyframes turnIn{
-  0%{transform:rotateY(88deg);opacity:.15}
-  100%{transform:rotateY(0deg);opacity:1}
-}
-@keyframes wrongShake{
-  0%,100%{transform:translateX(0)}
-  25%{transform:translateX(-8px)}
-  75%{transform:translateX(8px)}
-}
-.pageMeta{
-  min-height:40px;display:flex;justify-content:center;
-  gap:6px;flex-wrap:wrap;padding:13px 12px 0
-}
-.pill{
-  display:inline-flex;align-items:center;border-radius:999px;
-  padding:5px 9px;font-size:11px;font-weight:900;
-  color:#dce8fb;background:#24324b;border:1px solid #3a4b68
-}
-.pill.belt{color:#111}
-.belt-White{background:#f7f7f7}
-.belt-Yellow-Stripe{background:#ffe78a}
-.belt-Yellow{background:#ffd400}
-.belt-Green-Stripe{background:#9be789}
-.belt-Green{background:#23b35b;color:#fff!important}
-.belt-Blue-Stripe{background:#9fd0ff}
-.belt-Blue{background:#1477d4;color:#fff!important}
-.belt-Red-Stripe{background:#ff8a8a}
-.belt-Red-Belt{background:#e53935;color:#fff!important}
-.belt-Black-Stripe{background:#191919;color:#fff!important;border-color:#777!important}
-
-.wordArea{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;padding:24px 18px;
-  cursor:pointer;user-select:none
-}
-.word{
-  font-size:clamp(60px,17vw,122px);
-  line-height:.98;font-weight:950;letter-spacing:-.055em;
-  overflow-wrap:anywhere;text-wrap:balance
-}
-.word.long{font-size:clamp(44px,11vw,82px)}
-.hangul{
-  color:var(--gold);font-size:clamp(36px,9vw,66px);
-  line-height:1.08;font-weight:850;margin-top:18px
-}
-.answerLabel{
-  font-size:12px;color:var(--muted);font-weight:850;
-  text-transform:uppercase;letter-spacing:.08em
-}
-.answerWord{
-  color:var(--gold);font-size:clamp(54px,15vw,108px);
-  line-height:1;font-weight:950;letter-spacing:-.05em;
-  margin-top:13px;overflow-wrap:anywhere;text-wrap:balance
-}
-.answerWord.long{font-size:clamp(40px,10vw,75px)}
-.answerDetails{color:var(--muted);font-size:15px;margin-top:18px;line-height:1.5;white-space:pre-line}
-.answerWord.theoryAnswer{font-size:clamp(22px,5.5vw,38px);line-height:1.35;letter-spacing:-.02em;white-space:pre-line;max-width:780px}
-
-.practiceControls{padding-top:10px}
-.audioRow{display:flex;justify-content:center;margin-bottom:9px}
-.audioButton{
-  padding:12px 19px;background:#183657;color:#a9d7ff;
-  border:1px solid #2d66a2;font-size:16px
-}
-.mainActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.actionButton{
-  padding:14px 8px;font-size:15px;background:#33415c;
-  box-shadow:0 5px 14px rgba(0,0,0,.22)
-}
-.actionButton:active,.backButton:active,.audioButton:active,.startButton:active{transform:scale(.98)}
-.good{background:#123e2b;color:#76f0b1;border:1px solid #247e50}
-.bad{background:#4a1f27;color:#ff9b9b;border:1px solid #8f3442}
-.statsLine{text-align:center;color:var(--muted);font-size:12px;padding:9px 2px 2px}
-.swipeHint{text-align:center;color:#75839a;font-size:11px;margin-top:2px}
-
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-@media(max-width:390px){
-  h1{font-size:21px}.logo{width:42px;height:42px;font-size:24px}
-  .pageStage{min-height:390px}.wordArea{padding:19px 12px}
-  .mainActions{gap:6px}.actionButton{font-size:13px;padding:13px 5px}
-}
-@media(orientation:landscape) and (max-height:600px){
-  body{padding-top:6px;padding-bottom:6px}
-  .practiceHeader{padding-bottom:5px}
-  .pageStage{min-height:250px}
-  .word{font-size:clamp(44px,9vw,82px)}
-  .answerWord{font-size:clamp(40px,8vw,74px)}
-  .hangul{font-size:clamp(25px,5vw,42px)}
-  .wordArea{padding:12px 16px}
-  .practiceControls{padding-top:6px}
-  .audioRow{margin-bottom:5px}
-  .actionButton{padding:10px 8px}
-  .statsLine{padding-top:5px}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#06111f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tobi's TKD Academy">
+  <title>Tobi's Taekwon-Do Academy</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app">
-  <section id="setupPage">
-    <div class="top">
-      <div class="logo">🥋</div>
-      <div>
-        <h1>Tobi's ITF TKD Trainer</h1>
-        <div class="subtitle">Choose what to practise, then start the full-screen trainer.</div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="grid">
-        <div>
-          <label>Practice</label>
-          <select id="practiceType" onchange="handleSettingsChange()">
-            <option value="common">Common terms</option>
-            <option value="techniques">Techniques</option>
-            <option value="theory">Theory</option>
-          </select>
+  <main class="app-shell">
+    <section id="setupScreen" class="screen setup-screen">
+      <header class="hero">
+        <div class="hero-copy">
+          <div class="brand-script">Tobi's</div>
+          <div class="brand-main">TAEKWON-DO</div>
+          <div class="brand-accent">ACADEMY</div>
+          <p>Train. Learn. Progress.</p>
         </div>
-        <div id="directionBox">
-          <label>Direction</label>
-          <select id="direction" onchange="handleSettingsChange()">
-            <option value="ko2en">Korean → English</option>
-            <option value="en2ko">English → Korean</option>
-          </select>
+        <img class="hero-person" src="assets/tkd-hero.png" alt="Taekwon-Do student performing a side kick">
+      </header>
+
+      <section class="setup-card">
+        <div class="section-label"><span>1</span> Practice</div>
+        <div class="practice-grid" id="practiceTiles">
+          <button class="practice-tile active" data-value="common" type="button">
+            <span class="tile-icon">한</span>
+            <strong>Common Terms</strong>
+            <small>Build vocabulary</small>
+          </button>
+          <button class="practice-tile" data-value="techniques" type="button">
+            <span class="tile-icon">🥋</span>
+            <strong>Techniques</strong>
+            <small>Learn techniques</small>
+          </button>
+          <button class="practice-tile" data-value="theory" type="button">
+            <span class="tile-icon">▤</span>
+            <strong>Theory</strong>
+            <small>Understand principles</small>
+          </button>
         </div>
-        <div id="beltBox">
-          <label>Belt</label>
-          <select id="belt" onchange="handleSettingsChange()"></select>
-        </div>
-        <div id="scopeBox">
-          <label>Range</label>
-          <select id="scope" onchange="handleSettingsChange()">
-            <option value="upto">White → selected belt</option>
-            <option value="only">Selected belt only</option>
-          </select>
-        </div>
-        <div>
-          <label>Category</label>
-          <select id="category" onchange="handleSettingsChange()"></select>
-        </div>
-      </div>
+        <input id="practiceType" type="hidden" value="common">
 
-      <div class="tabs">
-        <div class="tab active" id="tabRandom" onclick="setMode('random')">🎲 Random</div>
-        <div class="tab" id="tabStudy" onclick="setMode('study')">📚 Study</div>
-        <div class="tab" id="tabWrong" onclick="setMode('wrong')">❌ Wrong</div>
-      </div>
-
-      <button class="startButton" onclick="startPractice()">Start practice</button>
-      <div id="deckSummary" class="deckSummary">Loading terms…</div>
-    </div>
-  </section>
-
-  <section id="practicePage" class="hidden">
-    <div class="practiceHeader">
-      <button class="backButton" onclick="exitPractice()">‹ Settings</button>
-      <div class="practiceInfo">
-        <b id="practiceTitle">Practice</b>
-        <span id="progressLabel">0/0</span>
-      </div>
-      <div style="width:82px"></div>
-    </div>
-
-    <div class="progressOuter"><div class="progressInner" id="progressBar"></div></div>
-
-    <div class="pageStage" id="pageStage">
-      <div class="page" id="page">
-        <div class="pageMeta" id="meta"></div>
-        <div class="wordArea" onclick="toggleAnswer()">
-          <div id="frontContent">
-            <div id="question" class="word">Ready</div>
-            <div id="hangul" class="hangul"></div>
+        <div id="directionSection">
+          <div class="section-label"><span>2</span> Direction</div>
+          <div class="choice-stack">
+            <button class="choice-row active" data-direction="ko2en" type="button">
+              <span class="choice-symbol">한</span>
+              <span><strong>Korean → English</strong><small>See Korean, recall English</small></span>
+              <span class="choice-check">✓</span>
+            </button>
+            <button class="choice-row" data-direction="en2ko" type="button">
+              <span class="choice-symbol">A</span>
+              <span><strong>English → Korean</strong><small>See English, recall Korean</small></span>
+              <span class="choice-check">○</span>
+            </button>
           </div>
-          <div id="backContent" class="hidden">
-            <div class="answerLabel">Answer</div>
-            <div id="answerWord" class="answerWord"></div>
-            <div id="answerDetails" class="answerDetails"></div>
-          </div>
+          <input id="direction" type="hidden" value="ko2en">
         </div>
+
+        <div class="section-label"><span>3</span> Filters</div>
+        <div class="filter-list">
+          <label id="beltRow" class="filter-row">
+            <span class="filter-icon">🥋</span><span class="filter-label">Belt</span>
+            <select id="belt"></select>
+          </label>
+          <label id="scopeRow" class="filter-row">
+            <span class="filter-icon">↳</span><span class="filter-label">Belt range</span>
+            <select id="scope">
+              <option value="through">Up to selected belt</option>
+              <option value="only">Selected belt only</option>
+            </select>
+          </label>
+          <label class="filter-row">
+            <span class="filter-icon">▣</span><span class="filter-label">Category</span>
+            <select id="category"><option value="All">All categories</option></select>
+          </label>
+          <label class="filter-row">
+            <span class="filter-icon">↝</span><span class="filter-label">Mode</span>
+            <select id="mode">
+              <option value="random">Random</option>
+              <option value="study">Study in order</option>
+              <option value="wrong">Wrong only</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="deckSummary" class="deck-summary">Loading cards…</div>
+        <button id="startButton" class="start-button" type="button">START PRACTICE <span>→</span></button>
+        <div class="version">Tobi's Taekwon-Do Academy · v4.0</div>
+      </section>
+    </section>
+
+    <section id="practiceScreen" class="screen practice-screen hidden">
+      <header class="practice-header">
+        <button id="backButton" class="icon-button" type="button" aria-label="Back to settings">←</button>
+        <div id="practiceTitle">PRACTICE</div>
+        <button id="settingsButton" class="icon-button" type="button" aria-label="Settings">⚙</button>
+      </header>
+
+      <div class="progress-line"><div id="progressBar"></div></div>
+      <div class="progress-count" id="progressCount">0 / 0</div>
+      <div id="beltBadge" class="belt-badge hidden"></div>
+
+      <article id="flashcard" class="flashcard" tabindex="0">
+        <div id="frontContent" class="card-face">
+          <div id="question" class="question">Loading…</div>
+          <div id="hangul" class="hangul"></div>
+        </div>
+        <div id="backContent" class="card-face hidden">
+          <div class="answer-label">ANSWER</div>
+          <div id="answerWord" class="answer-word"></div>
+          <div id="answerDetails" class="answer-details"></div>
+        </div>
+      </article>
+
+      <div class="practice-actions">
+        <button id="wrongButton" class="grade-button wrong" type="button">✕ Wrong</button>
+        <button id="audioButton" class="audio-button" type="button" aria-label="Play Korean audio">🔊</button>
+        <button id="rightButton" class="grade-button right" type="button">✓ Right</button>
       </div>
-    </div>
-
-    <div class="practiceControls">
-      <div class="audioRow">
-        <button id="audioButton" class="audioButton hidden" onclick="playAudio()">🔊 Play Korean</button>
-      </div>
-      <div class="mainActions">
-        <button class="actionButton bad" onclick="grade(false)">✘ Wrong</button>
-        <button class="actionButton good" onclick="grade(true)">✔ Right</button>
-      </div>
-      <div id="statsLine" class="statsLine">Seen 0 · Right 0 · Wrong 0 · Review 0</div>
-      <div class="swipeHint" id="swipeHint">Swipe left for next · Swipe right or tap to reveal</div>
-    </div>
-  </section>
-</div>
-
-<script>
-const BELT_ORDER=[
-  "White","Yellow Stripe","Yellow","Green Stripe","Green",
-  "Blue Stripe","Blue","Red Stripe","Red Belt","Black Stripe"
-];
-
-let COMMON_TERMS=[];
-let TECHNIQUES=[];
-let THEORY=[];
-let learnMode="random";
-let deck=[];
-let wrongCards=[];
-let current=null;
-let studyIndex=0;
-let shownCount=0;
-let seen=0;
-let right=0;
-let wrong=0;
-let answerShown=false;
-let changingCard=false;
-let touchStartX=0;
-let touchStartY=0;
-
-function id(value){return document.getElementById(value)}
-
-async function loadData(){
-  try{
-    const [commonResponse,techniqueResponse,theoryResponse]=await Promise.all([
-      fetch("common_terms.json"),
-      fetch("techniques.json"),
-      fetch("theory.json")
-    ]);
-    if(!commonResponse.ok||!techniqueResponse.ok||!theoryResponse.ok){
-      throw new Error("One or more data files could not be loaded.");
-    }
-    COMMON_TERMS=await commonResponse.json();
-    TECHNIQUES=await techniqueResponse.json();
-    THEORY=await theoryResponse.json();
-
-    fillSelect(id("belt"),BELT_ORDER);
-    restoreSettings();
-    restoreWrongCards();
-    updateControls();
-    buildDeck();
-    updateSummary();
-  }catch(error){
-    id("deckSummary").textContent="Could not load data: "+error.message;
-  }
-}
-
-function saveSettings(){
-  ["practiceType","direction","belt","scope","category"].forEach(key=>{
-    if(id(key)) localStorage.setItem("tkd_"+key,id(key).value);
-  });
-  localStorage.setItem("tkd_learnMode",learnMode);
-}
-
-function restoreSettings(){
-  ["practiceType","direction","belt","scope"].forEach(key=>{
-    const value=localStorage.getItem("tkd_"+key);
-    if(value!==null&&id(key)) id(key).value=value;
-  });
-  const savedMode=localStorage.getItem("tkd_learnMode");
-  if(savedMode) learnMode=savedMode;
-  updateTabs();
-}
-
-function saveWrongCards(){
-  localStorage.setItem("tkd_wrongCards",JSON.stringify(wrongCards));
-}
-
-function restoreWrongCards(){
-  try{
-    wrongCards=JSON.parse(localStorage.getItem("tkd_wrongCards")||"[]");
-    if(!Array.isArray(wrongCards)) wrongCards=[];
-  }catch{
-    wrongCards=[];
-  }
-}
-
-function fillSelect(element,values){
-  element.innerHTML="";
-  values.forEach(value=>{
-    const option=document.createElement("option");
-    option.value=value;
-    option.textContent=value;
-    element.appendChild(option);
-  });
-}
-
-function unique(items,key){
-  return ["All",...Array.from(new Set(items.map(item=>item[key]).filter(Boolean)))];
-}
-
-function updateControls(){
-  const type=id("practiceType").value;
-  const isTechnique=type==="techniques";
-  const isTheory=type==="theory";
-
-  id("beltBox").style.display=isTechnique?"block":"none";
-  id("scopeBox").style.display=isTechnique?"block":"none";
-  id("directionBox").style.display=isTheory?"none":"block";
-
-  const previousCategory=localStorage.getItem("tkd_category");
-  const data=
-    type==="common"?COMMON_TERMS:
-    type==="techniques"?TECHNIQUES:
-    THEORY;
-
-  fillSelect(id("category"),unique(data,"category"));
-
-  if(previousCategory&&Array.from(id("category").options).some(option=>option.value===previousCategory)){
-    id("category").value=previousCategory;
-  }
-}
-
-function handleSettingsChange(){
-  saveSettings();
-  updateControls();
-  buildDeck();
-  updateSummary();
-}
-
-function setMode(mode){
-  learnMode=mode;
-  saveSettings();
-  updateTabs();
-  buildDeck();
-  updateSummary();
-}
-
-function updateTabs(){
-  id("tabRandom").classList.toggle("active",learnMode==="random");
-  id("tabStudy").classList.toggle("active",learnMode==="study");
-  id("tabWrong").classList.toggle("active",learnMode==="wrong");
-}
-
-function allowedCards(){
-  const type=id("practiceType").value;
-  const category=id("category").value;
-  let data=
-    type==="common"?COMMON_TERMS:
-    type==="techniques"?TECHNIQUES:
-    THEORY;
-
-  if(category!=="All"){
-    data=data.filter(item=>item.category===category);
-  }
-
-  if(type==="techniques"){
-    const belt=id("belt").value;
-    const scope=id("scope").value;
-    const beltIndex=BELT_ORDER.indexOf(belt);
-
-    data=data.filter(item=>{
-      const itemIndex=BELT_ORDER.indexOf(item.belt);
-      return scope==="only"
-        ? item.belt===belt
-        : itemIndex>=0&&itemIndex<=beltIndex;
-    });
-  }
-
-  return data;
-}
-
-function buildDeck(){
-  deck=learnMode==="wrong"?[...wrongCards]:allowedCards();
-  studyIndex=0;
-  shownCount=0;
-}
-
-function updateSummary(){
-  const count=deck.length;
-  const modeName=
-    learnMode==="random"?"Random":
-    learnMode==="study"?"Study in order":
-    "Wrong answers only";
-
-  id("deckSummary").textContent=
-    `${modeName} · ${count} ${count===1?"card":"cards"}`;
-}
-
-function startPractice(){
-  saveSettings();
-  buildDeck();
-
-  if(!deck.length){
-    id("deckSummary").textContent=
-      learnMode==="wrong"
-        ?"No wrong cards yet. Practise another mode first."
-        :"No terms match this selection.";
-    return;
-  }
-
-  id("setupPage").classList.add("hidden");
-  id("practicePage").classList.remove("hidden");
-  updatePracticeTitle();
-  nextCard(false);
-}
-
-function exitPractice(){
-  speechSynthesis.cancel();
-  id("practicePage").classList.add("hidden");
-  id("setupPage").classList.remove("hidden");
-  updateSummary();
-}
-
-function updatePracticeTitle(){
-  const selected=id("practiceType").value;
-  const type=
-    selected==="common"?"Common terms":
-    selected==="techniques"?"Techniques":
-    "Theory";
-
-  if(selected==="theory"){
-    id("practiceTitle").textContent=type;
-  }else{
-    const direction=id("direction").value==="ko2en"?"Korean → English":"English → Korean";
-    id("practiceTitle").textContent=`${type} · ${direction}`;
-  }
-
-  id("swipeHint").textContent=
-    selected==="theory"
-      ?"Swipe left to reveal · swipe left again for next"
-      :"Swipe left for next · swipe right or tap to reveal";
-}
-
-function chooseCard(){
-  if(learnMode==="study"){
-    const card=deck[studyIndex%deck.length];
-    studyIndex++;
-    return card;
-  }
-
-  if(deck.length===1) return deck[0];
-
-  let candidate;
-  do{
-    candidate=deck[Math.floor(Math.random()*deck.length)];
-  }while(current&&cardKey(candidate)===cardKey(current));
-
-  return candidate;
-}
-
-function nextCard(animate=true){
-  if(changingCard||!deck.length) return;
-  changingCard=true;
-
-  const page=id("page");
-  if(animate) page.classList.add("turnOut");
-
-  setTimeout(()=>{
-    current=chooseCard();
-    shownCount++;
-    answerShown=false;
-    renderCard();
-
-    if(animate){
-      page.classList.remove("turnOut");
-      page.classList.add("turnIn");
-      setTimeout(()=>page.classList.remove("turnIn"),310);
-    }
-
-    changingCard=false;
-  },animate?240:0);
-}
-
-function renderCard(){
-  id("frontContent").classList.remove("hidden");
-  id("backContent").classList.add("hidden");
-
-  const isTheory=id("practiceType").value==="theory";
-
-  if(isTheory){
-    id("question").textContent=current.question;
-    id("question").classList.add("long");
-    id("hangul").textContent="";
-    id("answerWord").textContent=current.answer;
-    id("answerWord").classList.add("theoryAnswer");
-    id("answerWord").classList.remove("long");
-    id("answerDetails").textContent="";
-    id("audioButton").classList.add("hidden");
-  }else{
-    const koreanFirst=id("direction").value==="ko2en";
-    const question=koreanFirst?current.korean:current.english;
-
-    id("question").textContent=question;
-    id("question").classList.toggle("long",question.length>24);
-    id("hangul").textContent=koreanFirst?(current.hangul||""):"";
-
-    const answer=koreanFirst?current.english:current.korean;
-    id("answerWord").textContent=answer;
-    id("answerWord").classList.toggle("long",answer.length>24);
-    id("answerWord").classList.remove("theoryAnswer");
-
-    const details=[];
-    if(!koreanFirst&&current.hangul) details.push(current.hangul);
-    if(current.category) details.push(current.category);
-    if(current.belt) details.push(current.belt);
-    id("answerDetails").textContent=details.join(" · ");
-
-    id("audioButton").classList.toggle("hidden",!koreanFirst);
-  }
-
-  renderMeta();
-  updateProgress();
-  updateStats();
-}
-
-function toggleAnswer(){
-  if(!current) return;
-
-  answerShown=!answerShown;
-  id("frontContent").classList.toggle("hidden",answerShown);
-  id("backContent").classList.toggle("hidden",!answerShown);
-
-  if(id("practiceType").value==="theory"){
-    id("audioButton").classList.add("hidden");
-  }else{
-    const koreanVisible=id("direction").value==="ko2en"||answerShown;
-    id("audioButton").classList.toggle("hidden",!koreanVisible);
-  }
-}
-
-function renderMeta(){
-  let html="";
-
-  if((id("practiceType").value==="techniques"||id("practiceType").value==="theory")&&current.belt){
-    const className="belt-"+current.belt.replaceAll(" ","-");
-    html+=`<span class="pill belt ${className}">${escapeHtml(current.belt)}</span>`;
-  }
-
-  html+=`<span class="pill">${escapeHtml(current.category||"Common")}</span>`;
-  id("meta").innerHTML=html;
-}
-
-function grade(correct){
-  if(!current) return;
-
-  seen++;
-
-  if(correct){
-    right++;
-    wrongCards=wrongCards.filter(card=>cardKey(card)!==cardKey(current));
-  }else{
-    wrong++;
-    if(!wrongCards.some(card=>cardKey(card)===cardKey(current))){
-      wrongCards.push(current);
-    }
-    const page=id("page");
-    page.classList.add("wrongShake");
-    setTimeout(()=>page.classList.remove("wrongShake"),300);
-  }
-
-  saveWrongCards();
-
-  if(learnMode==="wrong"){
-    deck=[...wrongCards];
-
-    if(!deck.length){
-      updateStats();
-      id("question").textContent="Review complete";
-      id("hangul").textContent="";
-      id("meta").innerHTML="";
-      id("audioButton").classList.add("hidden");
-      return;
-    }
-  }
-
-  updateStats();
-  nextCard();
-}
-
-function cardKey(card){
-  if(card.question){
-    return ["theory",card.question,card.category||""].join("|");
-  }
-  return [
-    card.english,
-    card.korean,
-    card.belt||"",
-    card.category||""
-  ].join("|");
-}
-
-function updateStats(){
-  id("statsLine").textContent=
-    `Seen ${seen} · Right ${right} · Wrong ${wrong} · Review ${wrongCards.length}`;
-}
-
-function updateProgress(){
-  const total=deck.length;
-  const position=total?((shownCount-1)%total)+1:0;
-
-  id("progressLabel").textContent=total?`${position}/${total}`:"0/0";
-  id("progressBar").style.width=total?`${(position/total)*100}%`:"0%";
-}
-
-function playAudio(){
-  if(!current||!window.speechSynthesis) return;
-
-  speechSynthesis.cancel();
-
-  const text=current.hangul||current.korean;
-  const utterance=new SpeechSynthesisUtterance(text);
-  utterance.lang=current.hangul?"ko-KR":"en-US";
-  utterance.rate=.72;
-  speechSynthesis.speak(utterance);
-}
-
-function escapeHtml(text){
-  return String(text).replace(/[&<>"']/g,character=>({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  })[character]);
-}
-
-id("pageStage").addEventListener("touchstart",event=>{
-  const touch=event.changedTouches[0];
-  touchStartX=touch.clientX;
-  touchStartY=touch.clientY;
-},{passive:true});
-
-id("pageStage").addEventListener("touchend",event=>{
-  const touch=event.changedTouches[0];
-  const dx=touch.clientX-touchStartX;
-  const dy=touch.clientY-touchStartY;
-
-  if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)) return;
-
-  if(dx<0){
-    if(id("practiceType").value==="theory"&&!answerShown){
-      toggleAnswer();
-    }else{
-      nextCard();
-    }
-  }else{
-    toggleAnswer();
-  }
-},{passive:true});
-
-window.addEventListener("keydown",event=>{
-  if(id("practicePage").classList.contains("hidden")) return;
-
-  if(event.key==="ArrowRight"||event.key===" "){
-    event.preventDefault();
-    if(id("practiceType").value==="theory"&&!answerShown){
-      toggleAnswer();
-    }else{
-      nextCard();
-    }
-  }
-  if(event.key==="ArrowUp") grade(true);
-  if(event.key==="ArrowDown") grade(false);
-  if(event.key==="Enter") toggleAnswer();
-  if(event.key==="Escape") exitPractice();
-});
-
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("./sw.js");
-  });
-}
-
-loadData();
-</script>
+      <div id="swipeHint" class="swipe-hint">Swipe left for next · tap to reveal</div>
+      <div id="stats" class="stats">0 right · 0 wrong</div>
+    </section>
+  </main>
+  <script src="app.js"></script>
 </body>
 </html>

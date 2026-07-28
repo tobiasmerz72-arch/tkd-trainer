@@ -1,25 +1,23 @@
 {
-  "name": "Tobi's ITF TKD Trainer",
-  "short_name": "TKD Trainer",
-  "description": "ITF Taekwondo Korean and English terminology trainer",
+  "name": "Tobi's Taekwon-Do Academy",
+  "short_name": "TKD Academy",
+  "description": "ITF Taekwon-Do terminology, techniques and theory trainer.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#070a10",
-  "theme_color": "#070a10",
+  "background_color": "#040b14",
+  "theme_color": "#06111f",
   "orientation": "any",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }

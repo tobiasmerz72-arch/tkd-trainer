@@ -1,0 +1,20 @@
+INSTALLATION
+
+1. Extract the ZIP.
+2. Open your existing GitHub repository.
+3. Upload all files and the assets folder from this package.
+4. Choose to replace files with the same names.
+5. Do NOT delete your existing common_terms.json, techniques.json or icon files.
+6. Commit the changes.
+7. Wait for GitHub Pages to publish.
+8. Open the website in Safari and refresh twice.
+9. Fully close the Home Screen app and reopen it.
+
+If the old version is still shown:
+- Open the website itself in Safari and refresh.
+- Press and hold the old Home Screen icon.
+- Tap Remove App, then Delete App.
+- Return to Safari, tap Share, and choose Add to Home Screen.
+
+The service-worker cache is named:
+tobis-taekwondo-academy-v4-20260728
