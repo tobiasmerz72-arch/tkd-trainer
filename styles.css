@@ -1,13 +1,42 @@
-/* Version 5.1 — native app feel */
-html{background:#071321}
-body{min-height:100svh;padding-top:env(safe-area-inset-top);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left)}
-.launch-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(89,71,220,.34),transparent 40%),linear-gradient(160deg,#0b2035,#050b14 72%);opacity:1;visibility:visible;transition:opacity .42s ease,visibility .42s ease}
+/* Version 5.2 — animated full-screen intro */
+.launch-screen{
+ position:fixed;inset:0;z-index:9999;overflow:hidden;touch-action:none;
+ display:block;background:
+ radial-gradient(circle at 72% 46%,rgba(41,145,255,.30),transparent 28%),
+ radial-gradient(circle at 44% 76%,rgba(126,56,255,.22),transparent 34%),
+ linear-gradient(145deg,#020812 0%,#081b31 52%,#030711 100%);
+ opacity:1;visibility:visible;transform:translateX(0);
+ transition:transform .55s cubic-bezier(.72,0,.2,1),opacity .45s ease,visibility .45s;
+}
+.launch-screen.intro-leaving{transform:translateX(-105%);opacity:.2;pointer-events:none}
 .launch-screen.launch-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.launch-mark{width:88px;height:88px;border-radius:25px;display:grid;place-items:center;font-size:46px;font-weight:900;color:#fff;background:linear-gradient(145deg,#159deb,#794edc 62%,#a94bdd);box-shadow:0 18px 48px rgba(63,84,220,.42),inset 0 1px 0 rgba(255,255,255,.28);margin-bottom:25px}
-.launch-title{font-size:48px;font-weight:800;font-style:italic;letter-spacing:-3px;color:#fff;line-height:1}
-.launch-name{margin-top:12px;font-size:17px;font-weight:900;letter-spacing:2.2px;color:#bd9cff}
-.launch-tagline{margin-top:14px;font-size:12px;letter-spacing:1.4px;color:#92a5b8}
-@media(prefers-reduced-motion:reduce){.launch-screen{transition:none}}
+.intro-grid{position:absolute;inset:0;opacity:.32;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(to bottom,black,transparent 92%)}
+.intro-glow{position:absolute;width:74vmax;height:74vmax;right:-32vmax;top:4vh;border-radius:50%;background:radial-gradient(circle,rgba(0,157,255,.29),rgba(115,57,255,.14) 40%,transparent 70%);filter:blur(10px);animation:introGlow 2.2s ease-in-out infinite alternate}
+.intro-copy{position:absolute;z-index:6;left:max(24px,7vw);top:max(58px,11vh);text-shadow:0 8px 34px rgba(0,0,0,.85)}
+.intro-title{font-family:"Segoe Print","Bradley Hand",cursive;font-size:clamp(54px,15vw,92px);font-weight:800;font-style:italic;line-height:.88;letter-spacing:-5px;color:#fff;animation:titleIn .75s .12s both cubic-bezier(.2,.8,.2,1)}
+.intro-name{margin-top:18px;font-size:clamp(22px,7vw,40px);font-weight:1000;letter-spacing:.18em;color:#c5a6ff;animation:titleIn .75s .26s both cubic-bezier(.2,.8,.2,1)}
+.intro-george-wrap{position:absolute;z-index:5;right:-9vw;bottom:-3vh;width:min(112vw,720px);height:76vh;display:flex;align-items:flex-end;justify-content:flex-end;transform-origin:72% 72%;animation:kickEntrance 1.15s .35s both cubic-bezier(.12,.83,.23,1.15)}
+.intro-george{display:block;max-width:100%;max-height:100%;object-fit:contain;object-position:right bottom;filter:drop-shadow(0 24px 28px rgba(0,0,0,.52)) drop-shadow(0 0 24px rgba(36,146,255,.25));animation:kickHold 2.1s 1.5s ease-in-out infinite}
+.intro-impact-ring{position:absolute;z-index:-1;right:12%;top:25%;width:34vw;height:34vw;max-width:290px;max-height:290px;border:4px solid rgba(126,210,255,.6);border-radius:50%;opacity:0;animation:impactRing .7s 1.03s ease-out both}
+.intro-speed-lines{position:absolute;z-index:4;right:-5%;top:22%;width:78%;height:42%;opacity:0;background:repeating-linear-gradient(168deg,transparent 0 16px,rgba(126,210,255,.62) 17px 20px,transparent 21px 39px);clip-path:polygon(100% 0,100% 100%,0 62%,0 42%);filter:blur(.2px);animation:speedBurst .62s .72s ease-out both}
+.intro-swipe{position:absolute;z-index:8;left:50%;bottom:max(28px,calc(env(safe-area-inset-bottom) + 18px));transform:translateX(-50%);display:flex;align-items:center;gap:12px;color:#d7e9fb;font-size:12px;font-weight:900;letter-spacing:.19em;white-space:nowrap;opacity:0;animation:swipeIn .55s 1.55s forwards}
+.intro-swipe b{font-size:36px;line-height:.5;animation:swipeArrow 1.15s ease-in-out infinite}
+.launch-screen.intro-replay .intro-george-wrap{animation:kickReplay .65s cubic-bezier(.12,.83,.23,1.15)}
+.launch-screen.intro-replay .intro-impact-ring{animation:impactRing .6s ease-out both}
+.launch-screen.intro-replay .intro-speed-lines{animation:speedBurst .55s ease-out both}
+@keyframes titleIn{from{opacity:0;transform:translateY(-18px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes kickEntrance{0%{opacity:0;transform:translate3d(42vw,8vh,0) rotate(7deg) scale(.62)}58%{opacity:1;transform:translate3d(-2vw,-1vh,0) rotate(-2deg) scale(1.05)}100%{opacity:1;transform:none}}
+@keyframes kickReplay{0%{transform:translateX(20vw) rotate(5deg) scale(.82)}70%{transform:translateX(-2vw) rotate(-1deg) scale(1.04)}100%{transform:none}}
+@keyframes kickHold{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(-.5deg)}}
+@keyframes speedBurst{0%{opacity:0;transform:translateX(22%)}35%{opacity:.92}100%{opacity:0;transform:translateX(-12%)}}
+@keyframes impactRing{0%{opacity:.9;transform:scale(.28)}100%{opacity:0;transform:scale(1.55)}}
+@keyframes introGlow{from{transform:scale(.96);opacity:.75}to{transform:scale(1.05);opacity:1}}
+@keyframes swipeIn{to{opacity:.84}}
+@keyframes swipeArrow{0%,100%{transform:translateX(4px);opacity:.45}50%{transform:translateX(-7px);opacity:1}}
+@media(max-width:430px){.intro-george-wrap{right:-15vw;bottom:0;width:126vw;height:72vh}.intro-copy{top:max(52px,9vh)}.intro-name{letter-spacing:.12em}.intro-swipe{bottom:max(22px,calc(env(safe-area-inset-bottom) + 12px))}}
+@media(orientation:landscape) and (max-height:520px){.intro-copy{top:28px;left:32px}.intro-title{font-size:48px}.intro-name{font-size:22px}.intro-george-wrap{height:96vh;width:72vw;right:-2vw}.intro-swipe{left:30%;bottom:18px}}
+@media(prefers-reduced-motion:reduce){.intro-title,.intro-name,.intro-george-wrap,.intro-george,.intro-impact-ring,.intro-speed-lines,.intro-swipe,.intro-glow{animation:none!important}.intro-swipe{opacity:.9}.intro-george-wrap{opacity:1;transform:none}}
+
 
 :root{
   --bg:#040b14;--panel:#081524;--panel2:#0c1d30;--line:#29435c;

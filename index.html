@@ -16,12 +16,23 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="launchScreen" class="launch-screen" aria-hidden="true">
-    <div class="launch-mark">한</div>
-    <div class="launch-title">Tobi's</div>
-    <div class="launch-name">TAEKWON-DO ACADEMY</div>
-    <div class="launch-tagline">Train. Learn. Progress.</div>
-  </div>
+  <section id="launchScreen" class="launch-screen" aria-label="Animated welcome screen">
+    <div class="intro-grid" aria-hidden="true"></div>
+    <div class="intro-glow" aria-hidden="true"></div>
+    <div class="intro-speed-lines" aria-hidden="true"></div>
+    <div class="intro-copy">
+      <div class="intro-title">Tobi's</div>
+      <div class="intro-name">TKD ACADEMY</div>
+    </div>
+    <div class="intro-george-wrap" aria-hidden="true">
+      <div class="intro-impact-ring"></div>
+      <img class="intro-george" src="tkd-hero.png" alt="">
+    </div>
+    <div class="intro-swipe">
+      <span>SWIPE TO ENTER</span>
+      <b>‹</b>
+    </div>
+  </section>
   <main class="app-shell">
     <section id="setupScreen" class="screen setup-screen">
       <header class="hero">
@@ -103,7 +114,7 @@
         <div id="deckSummary" class="deck-summary">Loading cards…</div>
         <button id="resetProgressButton" class="reset-progress" type="button">Reset learning progress</button>
         <button id="startButton" class="start-button" type="button">START PRACTICE <span>→</span></button>
-        <div class="version">Tobi's Taekwon-Do Academy · v5.1</div>
+        <div class="version">Tobi's Taekwon-Do Academy · v5.2</div>
       </section>
     </section>
 

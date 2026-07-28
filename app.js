@@ -10,11 +10,40 @@ let learning=JSON.parse(localStorage.getItem(LEARNING_KEY)||"{}");
 function haptic(pattern=12){
   try{if("vibrate" in navigator)navigator.vibrate(pattern)}catch(_){}
 }
+let introStartX=0,introStartY=0,introSoundArmed=true,introDismissed=false;
+function playKickSound(){
+  if(!introSoundArmed)return;
+  introSoundArmed=false;
+  try{
+    const AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtx)return;
+    const ctx=new AudioCtx(),now=ctx.currentTime;
+    const master=ctx.createGain();master.gain.setValueAtTime(.0001,now);master.gain.exponentialRampToValueAtTime(.42,now+.012);master.gain.exponentialRampToValueAtTime(.0001,now+.52);master.connect(ctx.destination);
+    const noiseBuffer=ctx.createBuffer(1,ctx.sampleRate*.42,ctx.sampleRate),data=noiseBuffer.getChannelData(0);
+    for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,2.2);
+    const noise=ctx.createBufferSource(),filter=ctx.createBiquadFilter();noise.buffer=noiseBuffer;filter.type="bandpass";filter.frequency.setValueAtTime(1250,now);filter.frequency.exponentialRampToValueAtTime(260,now+.38);filter.Q.value=.65;noise.connect(filter);filter.connect(master);noise.start(now);noise.stop(now+.43);
+    const thump=ctx.createOscillator(),thumpGain=ctx.createGain();thump.type="sine";thump.frequency.setValueAtTime(120,now+.07);thump.frequency.exponentialRampToValueAtTime(42,now+.3);thumpGain.gain.setValueAtTime(.0001,now);thumpGain.gain.exponentialRampToValueAtTime(.7,now+.075);thumpGain.gain.exponentialRampToValueAtTime(.0001,now+.34);thump.connect(thumpGain);thumpGain.connect(master);thump.start(now);thump.stop(now+.38);
+    setTimeout(()=>ctx.close(),800);
+  }catch(_){ }
+}
+function replayIntroKick(){
+  const launch=$("launchScreen");if(!launch||introDismissed)return;
+  playKickSound();haptic([10,28,18]);launch.classList.remove("intro-replay");void launch.offsetWidth;launch.classList.add("intro-replay");
+  setTimeout(()=>launch.classList.remove("intro-replay"),760);
+}
 function hideLaunchScreen(){
-  const launch=$("launchScreen");
-  if(!launch)return;
-  requestAnimationFrame(()=>launch.classList.add("launch-hidden"));
-  setTimeout(()=>launch.remove(),650);
+  const launch=$("launchScreen");if(!launch||introDismissed)return;
+  introDismissed=true;launch.classList.add("intro-leaving");haptic(10);
+  setTimeout(()=>launch.remove(),620);
+}
+function setupIntro(){
+  const launch=$("launchScreen");if(!launch)return;
+  launch.addEventListener("touchstart",e=>{const t=e.changedTouches[0];introStartX=t.screenX;introStartY=t.screenY;replayIntroKick()},{passive:true});
+  launch.addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.screenX-introStartX,dy=t.screenY-introStartY;if((dx<-55&&Math.abs(dx)>Math.abs(dy))||(dy<-55&&Math.abs(dy)>Math.abs(dx)))hideLaunchScreen()},{passive:true});
+  launch.addEventListener("pointerdown",e=>{if(e.pointerType!=="touch"){introStartX=e.screenX;introStartY=e.screenY;replayIntroKick()}});
+  launch.addEventListener("pointerup",e=>{if(e.pointerType!=="touch"){const dx=e.screenX-introStartX,dy=e.screenY-introStartY;if(dx<-45||dy<-45)hideLaunchScreen()}});
+  launch.addEventListener("click",()=>replayIntroKick());
+  document.addEventListener("keydown",e=>{if(!$("launchScreen"))return;if(["ArrowLeft","ArrowUp","Enter"," "].includes(e.key)){e.preventDefault();replayIntroKick();setTimeout(hideLaunchScreen,220)}});
 }
 
 function unique(data,key){return [...new Set(data.map(x=>x[key]).filter(Boolean))].sort()}
@@ -255,6 +284,5 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowLeft"){e.preventDefault();previousCard()}if(e.key==="ArrowUp")grade(true);if(e.key==="ArrowDown")grade(false);if(e.key==="Escape")backToSettings();
 });
 if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
-window.addEventListener("load",()=>setTimeout(hideLaunchScreen,420));
-setTimeout(hideLaunchScreen,1600);
+window.addEventListener("load",setupIntro);
 load();
