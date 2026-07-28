@@ -167,3 +167,8 @@ button{cursor:pointer}
  .brand-script{font-size:68px}.brand-main{font-size:27px}.brand-accent{font-size:43px}
  .hero-person{width:68%;height:320px;right:-12px}
 }
+
+/* Version 5.0 — Smart Learning */
+.reset-progress{display:block;margin:0 auto 13px;padding:7px 12px;border:0;background:transparent;color:#71869a;font-size:11px;text-decoration:underline;text-underline-offset:3px}
+.reset-progress:active{color:#b6c5d3}
+#mode option[value="smart"]{font-weight:700}
