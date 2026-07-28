@@ -94,10 +94,35 @@ function updateTitle(){
   $("practiceTitle").textContent=type==="common"?"COMMON TERMS":type==="techniques"?"TECHNIQUES":"THEORY";
   $("swipeHint").textContent=type==="theory"?"Swipe left to reveal · left again for next":"Swipe left for next · tap to reveal";
 }
-function textSize(el,text,theory=false){
-  el.classList.remove("medium","small","theory");
-  if(theory){el.classList.add("theory");return}
-  if(text.length>38)el.classList.add("small");else if(text.length>22)el.classList.add("medium");
+function textSize(el,text,kind="term"){
+  el.classList.remove("medium","small","xsmall","theory-question","theory-answer");
+  const length=(text||"").length;
+  if(kind==="theory-question"){
+    el.classList.add("theory-question");
+    if(length>220)el.classList.add("xsmall");
+    else if(length>130)el.classList.add("small");
+    else if(length>75)el.classList.add("medium");
+    return;
+  }
+  if(kind==="theory-answer"){
+    el.classList.add("theory-answer");
+    if(length>700)el.classList.add("xsmall");
+    else if(length>420)el.classList.add("small");
+    else if(length>230)el.classList.add("medium");
+    return;
+  }
+  if(length>60)el.classList.add("xsmall");
+  else if(length>38)el.classList.add("small");
+  else if(length>22)el.classList.add("medium");
+}
+function fitTheoryText(el){
+  requestAnimationFrame(()=>{
+    const classes=["medium","small","xsmall"];
+    let i=0;
+    while(el.scrollHeight>el.clientHeight&&i<classes.length){
+      el.classList.add(classes[i++]);
+    }
+  });
 }
 function showCard(){
   current=deck[deckIndex%deck.length];answerShown=false;
@@ -105,12 +130,13 @@ function showCard(){
   const type=$("practiceType").value;
   if(type==="theory"){
     $("question").textContent=current.question;
-    textSize($("question"),current.question);
+    textSize($("question"),current.question,"theory-question");
     $("hangul").textContent="";
     $("answerWord").textContent=current.answer;
-    textSize($("answerWord"),current.answer,true);
+    textSize($("answerWord"),current.answer,"theory-answer");
     $("answerDetails").textContent="";
     $("audioButton").classList.add("hidden");
+    fitTheoryText($("question"));
   }else{
     const koFirst=$("direction").value==="ko2en";
     const q=koFirst?current.korean:current.english;
@@ -121,9 +147,9 @@ function showCard(){
     $("answerDetails").textContent=!koFirst&&current.hangul?current.hangul:"";
     $("audioButton").classList.toggle("hidden",!koFirst);
   }
-  // Only show belt: never show technique category.
-  const belt=current.belt||(($("practiceType").value==="theory")?current.category:"");
-  $("beltBadge").textContent=belt||"";
+  // Technique cards show the belt only. Category is deliberately hidden.
+  const belt=type==="techniques"?(current.belt||""):"";
+  $("beltBadge").textContent=belt;
   $("beltBadge").classList.toggle("hidden",!belt);
   updateProgress();animateCard();
 }
@@ -135,6 +161,7 @@ function toggleAnswer(){
   answerShown=!answerShown;
   $("frontContent").classList.toggle("hidden",answerShown);
   $("backContent").classList.toggle("hidden",!answerShown);
+  if($("practiceType").value==="theory"&&answerShown)fitTheoryText($("answerWord"));
   if($("practiceType").value!=="theory"){
     const koreanVisible=$("direction").value==="ko2en"||answerShown;
     $("audioButton").classList.toggle("hidden",!koreanVisible);
