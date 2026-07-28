@@ -15,19 +15,60 @@ button{cursor:pointer}
 .screen{min-height:100svh}
 .hidden{display:none!important}
 
-.hero{height:285px;position:relative;overflow:hidden;border-radius:0 0 28px 28px;
- background:radial-gradient(circle at 80% 30%,rgba(27,110,196,.35),transparent 38%),
- linear-gradient(145deg,#03101d,#06192c 55%,#020914)}
-.hero:after{content:"";position:absolute;inset:auto -20% -40% -20%;height:60%;
- background:radial-gradient(ellipse,rgba(5,151,245,.18),transparent 65%)}
-.hero-copy{position:absolute;z-index:2;left:22px;top:24px;text-shadow:0 4px 20px #000}
-.brand-script{font-family:"Trebuchet MS",cursive;font-style:italic;font-weight:900;
- font-size:58px;line-height:.85;letter-spacing:-5px;transform:skew(-8deg)}
-.brand-main{font-weight:900;font-style:italic;font-size:24px;letter-spacing:2px;color:#22a8ff;margin-top:10px}
-.brand-accent{font-weight:950;font-style:italic;font-size:36px;letter-spacing:1px}
-.hero-copy p{color:#c7d5e4;font-size:14px;margin-top:8px}
-.hero-person{position:absolute;z-index:1;right:-38px;bottom:-18px;width:76%;max-height:285px;object-fit:contain;object-position:right bottom;
- filter:drop-shadow(0 20px 22px rgba(0,0,0,.6))}
+.hero{
+ height:310px;position:relative;overflow:hidden;border-radius:0 0 30px 30px;
+ isolation:isolate;
+ background:
+  radial-gradient(circle at 72% 34%,rgba(37,151,255,.30),transparent 28%),
+  radial-gradient(circle at 88% 62%,rgba(135,69,255,.18),transparent 31%),
+  linear-gradient(145deg,#020a13 0%,#071b30 52%,#030a13 100%);
+ border-bottom:1px solid rgba(98,168,230,.20)
+}
+.hero:before{
+ content:"";position:absolute;z-index:0;inset:0;opacity:.42;pointer-events:none;
+ background-image:
+  linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+ background-size:28px 28px;
+ mask-image:linear-gradient(to bottom,black,transparent 88%)
+}
+.hero:after{
+ content:"";position:absolute;z-index:0;left:36%;right:-12%;bottom:-50px;height:175px;
+ background:radial-gradient(ellipse,rgba(0,153,255,.29),rgba(116,61,255,.12) 42%,transparent 70%);
+ filter:blur(8px)
+}
+.hero-copy{
+ position:absolute;z-index:3;left:24px;top:28px;width:49%;
+ text-shadow:0 5px 24px rgba(0,0,0,.82)
+}
+.brand-script{
+ font-family:"Segoe Print","Bradley Hand","Trebuchet MS",cursive;
+ font-style:italic;font-weight:900;font-size:59px;line-height:.82;
+ letter-spacing:-5px;transform:rotate(-3deg) skew(-8deg);
+ color:#fff;filter:drop-shadow(0 5px 0 rgba(0,0,0,.20))
+}
+.brand-main{
+ display:inline-block;margin-top:17px;padding:2px 8px 3px 5px;
+ font-weight:950;font-style:italic;font-size:23px;line-height:1;
+ letter-spacing:2.4px;color:#29aaff;
+ background:linear-gradient(90deg,rgba(0,126,255,.22),transparent);
+ transform:skew(-9deg)
+}
+.brand-accent{
+ margin-top:8px;font-weight:950;font-style:italic;font-size:37px;
+ line-height:.95;letter-spacing:1.2px;color:#fff
+}
+.hero-copy p{
+ color:#cad9e8;font-size:14px;font-weight:600;letter-spacing:.25px;margin-top:12px
+}
+.hero-person{
+ position:absolute;z-index:2;right:-24px;bottom:-7px;
+ width:74%;height:294px;object-fit:contain;object-position:right bottom;
+ filter:
+  drop-shadow(0 22px 20px rgba(0,0,0,.58))
+  drop-shadow(0 0 16px rgba(30,145,255,.20));
+ transform:translateZ(0)
+}
 
 .setup-card{position:relative;margin:-18px 4px 24px;padding:22px 16px 20px;border:1px solid rgba(105,145,180,.30);
  border-radius:26px;background:linear-gradient(180deg,rgba(8,22,37,.97),rgba(3,13,24,.98));box-shadow:var(--shadow)}
@@ -92,8 +133,23 @@ button{cursor:pointer}
 .swipe-hint{text-align:center;color:#8fa1b5;font-size:13px;margin-top:13px}.stats{text-align:center;color:#5f7387;font-size:11px;margin-top:7px}
 
 @media(max-width:420px){
- .hero{height:250px}.brand-script{font-size:49px}.brand-main{font-size:20px}.brand-accent{font-size:31px}
- .hero-person{width:79%;right:-42px}.practice-tile{min-height:110px}.setup-card{padding-left:12px;padding-right:12px}
+ .hero{height:278px}
+ .hero-copy{left:17px;top:24px;width:48%}
+ .brand-script{font-size:47px;letter-spacing:-4px}
+ .brand-main{font-size:17px;letter-spacing:1.45px;margin-top:15px;padding-left:3px}
+ .brand-accent{font-size:28px;margin-top:7px}
+ .hero-copy p{font-size:11px;margin-top:9px}
+ .hero-person{width:82%;height:265px;right:-53px;bottom:-3px}
+ .practice-tile{min-height:110px}.setup-card{padding-left:12px;padding-right:12px}
  .question{font-size:clamp(38px,11vw,58px)}
 }
-@media(min-width:700px){.app-shell{padding-left:28px;padding-right:28px}.hero-person{width:58%}}
+@media(max-width:350px){
+ .hero-copy{width:50%}.brand-script{font-size:42px}.brand-main{font-size:15px}.brand-accent{font-size:24px}
+ .hero-person{width:85%;right:-58px}
+}
+@media(min-width:700px){
+ .app-shell{padding-left:28px;padding-right:28px}
+ .hero{height:330px}.hero-copy{left:34px;top:34px}
+ .brand-script{font-size:68px}.brand-main{font-size:27px}.brand-accent{font-size:43px}
+ .hero-person{width:68%;height:320px;right:-12px}
+}
