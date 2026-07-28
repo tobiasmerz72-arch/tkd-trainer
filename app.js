@@ -6,6 +6,17 @@ let rightCount=0,wrongCount=0,sessionSeen=new Set();
 let wrongKeys=new Set(JSON.parse(localStorage.getItem("academy_wrong")||"[]"));
 let learning=JSON.parse(localStorage.getItem(LEARNING_KEY)||"{}");
 
+
+function haptic(pattern=12){
+  try{if("vibrate" in navigator)navigator.vibrate(pattern)}catch(_){}
+}
+function hideLaunchScreen(){
+  const launch=$("launchScreen");
+  if(!launch)return;
+  requestAnimationFrame(()=>launch.classList.add("launch-hidden"));
+  setTimeout(()=>launch.remove(),650);
+}
+
 function unique(data,key){return [...new Set(data.map(x=>x[key]).filter(Boolean))].sort()}
 function fillSelect(select,values,all=true){
   const currentValue=select.value;
@@ -169,7 +180,7 @@ function showCard(){
 }
 function animateCard(){const c=$("flashcard");c.classList.remove("card-pop");void c.offsetWidth;c.classList.add("card-pop")}
 function toggleAnswer(){
-  if(!current)return;answerShown=!answerShown;$("flashcard").classList.toggle("is-flipped",answerShown);
+  if(!current)return;haptic(8);answerShown=!answerShown;$("flashcard").classList.toggle("is-flipped",answerShown);
   $("flashcard").setAttribute("aria-label",answerShown?"Answer shown. Tap to return to the question.":"Flash card. Tap to reveal the answer.");
   if($("practiceType").value==="theory"&&answerShown)fitTheoryText($("answerWord"));
   if($("practiceType").value!=="theory"){
@@ -177,7 +188,7 @@ function toggleAnswer(){
   }
 }
 function moveCard(direction){
-  if(!deck.length)return;const c=$("flashcard"),exitClass=direction>0?"card-exit-left":"card-exit-right";c.classList.add(exitClass);
+  if(!deck.length)return;haptic(6);const c=$("flashcard"),exitClass=direction>0?"card-exit-left":"card-exit-right";c.classList.add(exitClass);
   setTimeout(()=>{c.classList.remove(exitClass);deckIndex=(deckIndex+direction+deck.length)%deck.length;showCard()},190);
 }
 function nextCard(){moveCard(1)}function previousCard(){moveCard(-1)}
@@ -193,7 +204,7 @@ function scheduleReview(card,correct){
   if(!nearby)deck.splice(insertAt,0,card);
 }
 function grade(correct){
-  if(!current)return;
+  if(!current)return;haptic(correct?18:[18,45,18]);
   const key=cardKey(current),old=recordFor(current);
   const updated={right:old.right+(correct?1:0),wrong:old.wrong+(correct?0:1),streak:correct?old.streak+1:0,last:Date.now()};
   learning[key]=updated;saveLearning();
@@ -244,4 +255,6 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowLeft"){e.preventDefault();previousCard()}if(e.key==="ArrowUp")grade(true);if(e.key==="ArrowDown")grade(false);if(e.key==="Escape")backToSettings();
 });
 if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
+window.addEventListener("load",()=>setTimeout(hideLaunchScreen,420));
+setTimeout(hideLaunchScreen,1600);
 load();

@@ -1,3 +1,13 @@
+/* Version 5.1 — native app feel */
+html{background:#071321}
+body{min-height:100svh;padding-top:env(safe-area-inset-top);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom);padding-left:env(safe-area-inset-left)}
+.launch-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(89,71,220,.34),transparent 40%),linear-gradient(160deg,#0b2035,#050b14 72%);opacity:1;visibility:visible;transition:opacity .42s ease,visibility .42s ease}
+.launch-screen.launch-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.launch-mark{width:88px;height:88px;border-radius:25px;display:grid;place-items:center;font-size:46px;font-weight:900;color:#fff;background:linear-gradient(145deg,#159deb,#794edc 62%,#a94bdd);box-shadow:0 18px 48px rgba(63,84,220,.42),inset 0 1px 0 rgba(255,255,255,.28);margin-bottom:25px}
+.launch-title{font-size:48px;font-weight:800;font-style:italic;letter-spacing:-3px;color:#fff;line-height:1}
+.launch-name{margin-top:12px;font-size:17px;font-weight:900;letter-spacing:2.2px;color:#bd9cff}
+.launch-tagline{margin-top:14px;font-size:12px;letter-spacing:1.4px;color:#92a5b8}
+@media(prefers-reduced-motion:reduce){.launch-screen{transition:none}}
 
 :root{
   --bg:#040b14;--panel:#081524;--panel2:#0c1d30;--line:#29435c;

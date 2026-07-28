@@ -3,16 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#06111f">
+  <meta name="theme-color" content="#071321">
+  <meta name="color-scheme" content="dark">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Tobi's TKD Academy">
   <title>Tobi's Taekwon-Do Academy</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div id="launchScreen" class="launch-screen" aria-hidden="true">
+    <div class="launch-mark">한</div>
+    <div class="launch-title">Tobi's</div>
+    <div class="launch-name">TAEKWON-DO ACADEMY</div>
+    <div class="launch-tagline">Train. Learn. Progress.</div>
+  </div>
   <main class="app-shell">
     <section id="setupScreen" class="screen setup-screen">
       <header class="hero">
@@ -94,7 +103,7 @@
         <div id="deckSummary" class="deck-summary">Loading cards…</div>
         <button id="resetProgressButton" class="reset-progress" type="button">Reset learning progress</button>
         <button id="startButton" class="start-button" type="button">START PRACTICE <span>→</span></button>
-        <div class="version">Tobi's Taekwon-Do Academy · v5.0</div>
+        <div class="version">Tobi's Taekwon-Do Academy · v5.1</div>
       </section>
     </section>
 
