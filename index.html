@@ -14,25 +14,23 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="intro-static.css">
 </head>
 <body>
-  <section id="launchScreen" class="launch-screen" aria-label="Animated welcome screen">
-    <div class="intro-grid" aria-hidden="true"></div>
-    <div class="intro-glow" aria-hidden="true"></div>
-    <div class="intro-speed-lines" aria-hidden="true"></div>
+  <section id="launchScreen" class="launch-screen static-intro" aria-label="Welcome screen">
     <div class="intro-copy">
       <div class="intro-title">Tobi's</div>
       <div class="intro-name">TKD ACADEMY</div>
     </div>
     <div class="intro-george-wrap" aria-hidden="true">
-      <div class="intro-impact-ring"></div>
-      <img class="intro-george" src="tkd-hero.png" alt="">
+      <img class="intro-george" src="intro-george.png" alt="">
     </div>
     <div class="intro-swipe">
       <span>SWIPE TO ENTER</span>
       <b>‹</b>
     </div>
   </section>
+
   <main class="app-shell">
     <section id="setupScreen" class="screen setup-screen">
       <header class="hero">
@@ -44,77 +42,43 @@
         </div>
         <img class="hero-person" src="tkd-hero.png" alt="Young Taekwon-Do student in a white dobok and red belt performing a side kick">
       </header>
-
       <section class="setup-card">
         <div class="section-label"><span>1</span> Practice</div>
         <div class="practice-grid" id="practiceTiles">
           <button class="practice-tile active" data-value="common" type="button">
-            <span class="tile-icon">한</span>
-            <strong>Common Terms</strong>
-            <small>Build vocabulary</small>
+            <span class="tile-icon">한</span><strong>Common Terms</strong><small>Build vocabulary</small>
           </button>
           <button class="practice-tile" data-value="techniques" type="button">
-            <span class="tile-icon">🥋</span>
-            <strong>Techniques</strong>
-            <small>Learn techniques</small>
+            <span class="tile-icon">🥋</span><strong>Techniques</strong><small>Learn techniques</small>
           </button>
           <button class="practice-tile" data-value="theory" type="button">
-            <span class="tile-icon">▤</span>
-            <strong>Theory</strong>
-            <small>Understand principles</small>
+            <span class="tile-icon">▤</span><strong>Theory</strong><small>Understand principles</small>
           </button>
         </div>
         <input id="practiceType" type="hidden" value="common">
-
         <div id="directionSection">
           <div class="section-label"><span>2</span> Direction</div>
           <div class="choice-stack">
             <button class="choice-row active" data-direction="ko2en" type="button">
-              <span class="choice-symbol">한</span>
-              <span><strong>Korean → English</strong><small>See Korean, recall English</small></span>
-              <span class="choice-check">✓</span>
+              <span class="choice-symbol">한</span><span><strong>Korean → English</strong><small>See Korean, recall English</small></span><span class="choice-check">✓</span>
             </button>
             <button class="choice-row" data-direction="en2ko" type="button">
-              <span class="choice-symbol">A</span>
-              <span><strong>English → Korean</strong><small>See English, recall Korean</small></span>
-              <span class="choice-check">○</span>
+              <span class="choice-symbol">A</span><span><strong>English → Korean</strong><small>See English, recall Korean</small></span><span class="choice-check">○</span>
             </button>
           </div>
           <input id="direction" type="hidden" value="ko2en">
         </div>
-
         <div class="section-label"><span>3</span> Filters</div>
         <div class="filter-list">
-          <label id="beltRow" class="filter-row">
-            <span class="filter-icon">🥋</span><span class="filter-label">Belt</span>
-            <select id="belt"></select>
-          </label>
-          <label id="scopeRow" class="filter-row">
-            <span class="filter-icon">↳</span><span class="filter-label">Belt range</span>
-            <select id="scope">
-              <option value="through">Up to selected belt</option>
-              <option value="only">Selected belt only</option>
-            </select>
-          </label>
-          <label class="filter-row">
-            <span class="filter-icon">▣</span><span class="filter-label">Category</span>
-            <select id="category"><option value="All">All categories</option></select>
-          </label>
-          <label class="filter-row">
-            <span class="filter-icon">↝</span><span class="filter-label">Mode</span>
-            <select id="mode">
-              <option value="smart">Smart Learning</option>
-              <option value="random">Random</option>
-              <option value="study">Study in order</option>
-              <option value="wrong">Wrong only</option>
-            </select>
-          </label>
+          <label id="beltRow" class="filter-row"><span class="filter-icon">🥋</span><span class="filter-label">Belt</span><select id="belt"></select></label>
+          <label id="scopeRow" class="filter-row"><span class="filter-icon">↳</span><span class="filter-label">Belt range</span><select id="scope"><option value="through">Up to selected belt</option><option value="only">Selected belt only</option></select></label>
+          <label class="filter-row"><span class="filter-icon">▣</span><span class="filter-label">Category</span><select id="category"><option value="All">All categories</option></select></label>
+          <label class="filter-row"><span class="filter-icon">↝</span><span class="filter-label">Mode</span><select id="mode"><option value="smart">Smart Learning</option><option value="random">Random</option><option value="study">Study in order</option><option value="wrong">Wrong only</option></select></label>
         </div>
-
         <div id="deckSummary" class="deck-summary">Loading cards…</div>
         <button id="resetProgressButton" class="reset-progress" type="button">Reset learning progress</button>
         <button id="startButton" class="start-button" type="button">START PRACTICE <span>→</span></button>
-        <div class="version">Tobi's Taekwon-Do Academy · v5.2</div>
+        <div class="version">Tobi's Taekwon-Do Academy · v5.3</div>
       </section>
     </section>
 
@@ -124,25 +88,15 @@
         <div id="practiceTitle">PRACTICE</div>
         <button id="settingsButton" class="icon-button" type="button" aria-label="Settings">⚙</button>
       </header>
-
       <div class="progress-line"><div id="progressBar"></div></div>
       <div class="progress-count" id="progressCount">0 / 0</div>
       <div id="beltBadge" class="belt-badge hidden"></div>
-
       <article id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Flash card. Tap to reveal the answer.">
         <div class="card-inner">
-          <div id="frontContent" class="card-face card-front">
-            <div id="question" class="question">Loading…</div>
-            <div id="hangul" class="hangul"></div>
-          </div>
-          <div id="backContent" class="card-face card-back">
-            <div class="answer-label">ANSWER</div>
-            <div id="answerWord" class="answer-word"></div>
-            <div id="answerDetails" class="answer-details"></div>
-          </div>
+          <div id="frontContent" class="card-face card-front"><div id="question" class="question">Loading…</div><div id="hangul" class="hangul"></div></div>
+          <div id="backContent" class="card-face card-back"><div class="answer-label">ANSWER</div><div id="answerWord" class="answer-word"></div><div id="answerDetails" class="answer-details"></div></div>
         </div>
       </article>
-
       <div class="practice-actions">
         <button id="wrongButton" class="grade-button wrong" type="button">✕ Wrong</button>
         <button id="audioButton" class="audio-button" type="button" aria-label="Play Korean audio">🔊</button>
@@ -153,5 +107,6 @@
     </section>
   </main>
   <script src="app.js"></script>
+  <script src="intro-open-sound.js"></script>
 </body>
 </html>

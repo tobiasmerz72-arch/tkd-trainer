@@ -1,0 +1,44 @@
+/* Static welcome screen override — v5.3 */
+.launch-screen.static-intro{
+  background:
+    radial-gradient(circle at 50% 48%,rgba(34,143,255,.22),transparent 34%),
+    radial-gradient(circle at 50% 100%,rgba(123,55,255,.18),transparent 42%),
+    linear-gradient(155deg,#020711 0%,#07182b 58%,#02050c 100%);
+}
+.static-intro .intro-grid,
+.static-intro .intro-glow,
+.static-intro .intro-speed-lines,
+.static-intro .intro-impact-ring{display:none!important}
+.static-intro .intro-copy{
+  left:50%;top:max(38px,7vh);transform:translateX(-50%);width:100%;text-align:center;
+}
+.static-intro .intro-title{
+  font-size:clamp(50px,13vw,86px);letter-spacing:-4px;
+  animation:staticTitleIn .7s .05s both ease-out;
+}
+.static-intro .intro-name{
+  margin-top:12px;font-size:clamp(19px,5.8vw,34px);letter-spacing:.16em;color:#b99cff;
+  animation:staticTitleIn .7s .16s both ease-out;
+}
+.static-intro .intro-george-wrap{
+  left:50%;right:auto;bottom:9vh;top:18vh;width:min(98vw,850px);height:70vh;
+  transform:translateX(-50%);display:flex;align-items:center;justify-content:center;
+  animation:none!important;
+}
+.static-intro .intro-george{
+  width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:center;
+  animation:none!important;transform:none!important;
+  filter:drop-shadow(0 25px 28px rgba(0,0,0,.58)) drop-shadow(0 0 22px rgba(35,142,255,.20));
+}
+.static-intro.intro-replay .intro-george-wrap,
+.static-intro.intro-replay .intro-george{animation:none!important;transform:translateX(-50%)!important}
+.static-intro .intro-swipe{bottom:max(22px,calc(env(safe-area-inset-bottom) + 14px));}
+@keyframes staticTitleIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@media (max-width:520px){
+  .static-intro .intro-george-wrap{top:21vh;bottom:8vh;width:112vw;height:67vh}
+  .static-intro .intro-copy{top:max(30px,5.5vh)}
+}
+@media (orientation:landscape) and (max-height:600px){
+  .static-intro .intro-copy{left:5vw;top:7vh;transform:none;width:34vw;text-align:left}
+  .static-intro .intro-george-wrap{left:61%;top:5vh;bottom:5vh;width:78vw;height:90vh}
+}
