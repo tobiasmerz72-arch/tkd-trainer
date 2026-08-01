@@ -1,29 +1,42 @@
-/* Static welcome screen override — v5.3 */
+/* Static full-screen welcome screen — v5.4 */
+html,body{min-height:100%;min-height:100dvh}
 .launch-screen.static-intro{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  height:100dvh!important;
+  min-height:-webkit-fill-available;
+  z-index:99999;
+  overflow:hidden;
+  opacity:0;
   background:
     radial-gradient(circle at 50% 48%,rgba(34,143,255,.22),transparent 34%),
     radial-gradient(circle at 50% 100%,rgba(123,55,255,.18),transparent 42%),
     linear-gradient(155deg,#020711 0%,#07182b 58%,#02050c 100%);
+  animation:splashScreenFade .85s .05s ease-out forwards;
 }
 .static-intro .intro-grid,
 .static-intro .intro-glow,
 .static-intro .intro-speed-lines,
 .static-intro .intro-impact-ring{display:none!important}
 .static-intro .intro-copy{
-  left:50%;top:max(38px,7vh);transform:translateX(-50%);width:100%;text-align:center;
+  left:50%;top:max(38px,calc(env(safe-area-inset-top) + 24px));
+  transform:translateX(-50%);width:100%;text-align:center;
+  opacity:0;animation:staticFadeIn .75s .28s ease-out forwards;
 }
 .static-intro .intro-title{
   font-size:clamp(50px,13vw,86px);letter-spacing:-4px;
-  animation:staticTitleIn .7s .05s both ease-out;
+  animation:none!important;
 }
 .static-intro .intro-name{
   margin-top:12px;font-size:clamp(19px,5.8vw,34px);letter-spacing:.16em;color:#b99cff;
-  animation:staticTitleIn .7s .16s both ease-out;
+  animation:none!important;
 }
 .static-intro .intro-george-wrap{
-  left:50%;right:auto;bottom:9vh;top:18vh;width:min(98vw,850px);height:70vh;
-  transform:translateX(-50%);display:flex;align-items:center;justify-content:center;
-  animation:none!important;
+  left:50%;right:auto;bottom:8vh;top:17vh;width:min(100vw,900px);height:72vh;
+  transform:translateX(-50%)!important;display:flex;align-items:center;justify-content:center;
+  opacity:0;animation:staticFadeIn .95s .42s ease-out forwards!important;
 }
 .static-intro .intro-george{
   width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:center;
@@ -32,13 +45,23 @@
 }
 .static-intro.intro-replay .intro-george-wrap,
 .static-intro.intro-replay .intro-george{animation:none!important;transform:translateX(-50%)!important}
-.static-intro .intro-swipe{bottom:max(22px,calc(env(safe-area-inset-bottom) + 14px));}
-@keyframes staticTitleIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.static-intro .intro-swipe{
+  bottom:max(22px,calc(env(safe-area-inset-bottom) + 14px));
+  opacity:0;animation:staticFadeIn .55s 1.05s ease-out forwards!important;
+}
+.launch-screen.static-intro.intro-leaving{
+  animation:none;transform:translateX(-105%);opacity:.12;
+}
+@keyframes splashScreenFade{from{opacity:0}to{opacity:1}}
+@keyframes staticFadeIn{from{opacity:0}to{opacity:1}}
 @media (max-width:520px){
-  .static-intro .intro-george-wrap{top:21vh;bottom:8vh;width:112vw;height:67vh}
-  .static-intro .intro-copy{top:max(30px,5.5vh)}
+  .static-intro .intro-george-wrap{top:20vh;bottom:7vh;width:116vw;height:69vh}
+  .static-intro .intro-copy{top:max(30px,calc(env(safe-area-inset-top) + 16px))}
 }
 @media (orientation:landscape) and (max-height:600px){
-  .static-intro .intro-copy{left:5vw;top:7vh;transform:none;width:34vw;text-align:left}
-  .static-intro .intro-george-wrap{left:61%;top:5vh;bottom:5vh;width:78vw;height:90vh}
+  .static-intro .intro-copy{left:5vw;top:max(18px,calc(env(safe-area-inset-top) + 10px));transform:none;width:34vw;text-align:left}
+  .static-intro .intro-george-wrap{left:61%;top:3vh;bottom:3vh;width:78vw;height:94vh}
+}
+@media(prefers-reduced-motion:reduce){
+  .launch-screen.static-intro,.static-intro .intro-copy,.static-intro .intro-george-wrap,.static-intro .intro-swipe{animation-duration:.01ms!important;animation-delay:0ms!important;opacity:1!important}
 }
